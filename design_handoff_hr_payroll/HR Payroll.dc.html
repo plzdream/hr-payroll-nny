@@ -316,10 +316,10 @@
           <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
             <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;"><span style="width:8px;height:8px;border-radius:50%;background:#dc2626;"></span><span style="font-size:14px;font-weight:700;">รายการหัก</span></div>
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
-              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">เบิกล่วงหน้า</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="advance" type="number" value="{{ d.advance }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
-              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ประกันสังคม</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="sso" type="number" value="{{ d.sso }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
-              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">หักค่าดูแลรถ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="careDeduct" type="number" value="{{ d.careDeduct }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
-              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">อื่น ๆ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="other" type="number" value="{{ d.other }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">เบิกล่วงหน้า</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="advance" type="number" value="{{ d.advance }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ประกันสังคม</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="sso" type="number" value="{{ d.sso }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">หักค่าดูแลรถ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="careDeduct" type="number" value="{{ d.careDeduct }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">อื่น ๆ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="other" type="number" value="{{ d.other }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
             </div>
           </div>
           </sc-if>
@@ -482,7 +482,7 @@ class Component extends DCLogic {
 
   getActivePer(){ return this.state.periods.find(p=>p.key===this.state.activePeriodKey)||this.state.periods[0]; }
   getPD(emp){ const key=this.state.activePeriodKey; if(!emp.payData[key]){const per=this.getActivePer();const dates=this.makePeriodDates(per.start,per.end);emp.payData[key]=this.emptyPD(emp,dates);} return emp.payData[key]; }
-  emptyPD(emp,dates){ if(emp.group==='mixer'||emp.group==='auxmixer') return {days:dates.map(d=>({d:d.d,early:0,day:0,night:0,q:0}))}; if(emp.group==='trailer') return {days:dates.map(d=>({d:d.d,trips:0,tons:0}))}; if(emp.group==='water') return {days:dates.map(d=>({d:d.d,trips:0,vol:0}))}; if(emp.group==='sales') return {records:[]}; return {wdays:dates.map(d=>({d:d.d,present:false,units:0,ot:0}))}; }
+  emptyPD(emp,dates){ if(emp.group==='mixer'||emp.group==='auxmixer') return {days:dates.map(d=>({d:d.d,early:0,day:0,night:0,q:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='trailer') return {days:dates.map(d=>({d:d.d,trips:0,tons:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='water') return {days:dates.map(d=>({d:d.d,trips:0,vol:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='sales') return {records:[]}; return {wdays:dates.map(d=>({d:d.d,present:false,units:0,ot:0}))}; }
 
   calcWithData(emp,pd){
     if(!pd) return {segs:[],gross:0,ded:0,net:0,metric:{}};
@@ -491,15 +491,15 @@ class Component extends DCLogic {
     if(emp.group==='mixer'||emp.group==='auxmixer'){
       let se=0,sd=0,sn=0,sq=0; days.forEach(r=>{se+=n(r.early);sd+=n(r.day);sn+=n(r.night);sq+=n(r.q);});
       segs=[{label:'ก่อน 8:00',val:se*n(emp.earlyRate||100),color:'#7c3aed'},{label:'8:00-17:00',val:sd*n(emp.dayRate||80),color:'#2563eb'},{label:'หลัง 17:00',val:sn*n(emp.nightRate||100),color:'#6366f1'},{label:'ค่าดูแลรถ',val:n(emp.cleaning||1000),color:'#14b8a6'}];
-      ded=n(emp.advance)+n(emp.sso)+n(emp.careDeduct)+n(emp.other); metric={trips:se+sd+sn,se,sd,sn,sq};
+      ded=n(pd.advance)+n(pd.sso)+n(pd.careDeduct)+n(pd.other); metric={trips:se+sd+sn,se,sd,sn,sq};
     } else if(emp.group==='trailer'){
       let trips=0,tons=0; days.forEach(r=>{trips+=n(r.trips);tons+=n(r.tons);});
       segs=[{label:'ค่าเที่ยว',val:trips*n(emp.trailerRate||200),color:'#4338ca'},{label:'ค่าดูแลรถ',val:n(emp.cleaning||1000),color:'#14b8a6'}];
-      ded=n(emp.advance)+n(emp.sso)+n(emp.careDeduct)+n(emp.other); metric={trips,tons};
+      ded=n(pd.advance)+n(pd.sso)+n(pd.careDeduct)+n(pd.other); metric={trips,tons};
     } else if(emp.group==='water'){
       let trips=0,vol=0; days.forEach(r=>{trips+=n(r.trips);vol+=n(r.vol);});
       segs=[{label:'ค่าเที่ยวรถน้ำ',val:trips*n(emp.waterRate||45),color:'#0284c7'},{label:'ค่าดูแลรถ',val:n(emp.cleaning||1000),color:'#14b8a6'}];
-      ded=n(emp.advance)+n(emp.sso)+n(emp.careDeduct)+n(emp.other); metric={trips,vol};
+      ded=n(pd.advance)+n(pd.sso)+n(pd.careDeduct)+n(pd.other); metric={trips,vol};
     } else if(emp.group==='sales'){
       let cq=0,kq=0,oq=0; records.forEach(r=>{if(r.productType==='other')oq+=n(r.qty);else if(r.kind==='credit')cq+=n(r.qty);else kq+=n(r.qty);});
       segs=[{label:'คอมฯ เครดิต',val:cq*n(emp.creditRate||5),color:'#0ea5e9'},{label:'คอมฯ เงินสด',val:kq*n(emp.cashRate||7),color:'#16a34a'},{label:'คอมฯ สินค้าอื่นๆ',val:oq*n(emp.otherRate||10),color:'#f59e0b'}];
@@ -528,6 +528,7 @@ class Component extends DCLogic {
   onLogout=()=>this.setState({view:'login',role:null,loginUser:'',loginPass:'',loginError:''});
   onSearch=(e)=>this.setState({query:e.target.value});
   onField=(e)=>{ const nm=e.target.name,v=this.n(e.target.value); this.patch(emp=>({...emp,[nm]:v})); };
+  onDedField=(e)=>{ const nm=e.target.name,v=this.n(e.target.value); this.patchPD(pd=>({...pd,[nm]:v})); };
   onBack=()=>this.setState({view:'roster'});
   onSaveDraft=()=>{ this.patch(e=>({...e,status:'รอตรวจสอบ'})); this.showToast('บันทึกข้อมูลเรียบร้อย'); };
   onVerify=()=>{ this.patch(e=>({...e,status:'ผ่านการตรวจสอบ'})); this.showToast('ตรวจสอบแล้ว'); };
@@ -546,11 +547,11 @@ class Component extends DCLogic {
     const newEmp=this.state.employees.map(emp=>{
       const old=emp.payData[key]||{};
       let pd;
-      if(emp.group==='mixer'||emp.group==='auxmixer') pd={days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,early:0,day:0,night:0,q:0}; })};
-      else if(emp.group==='trailer') pd={days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,trips:0,tons:0}; })};
-      else if(emp.group==='water') pd={days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,trips:0,vol:0}; })};
-      else if(emp.group==='sales') pd={records:old.records||[]};
-      else pd={wdays:newDates.map(d=>{ const x=(old.wdays||[]).find(r=>r.d===d.d); return x||{d:d.d,present:false,units:0,ot:0}; })};
+      if(emp.group==='mixer'||emp.group==='auxmixer') pd={...old,days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,early:0,day:0,night:0,q:0}; })};
+      else if(emp.group==='trailer') pd={...old,days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,trips:0,tons:0}; })};
+      else if(emp.group==='water') pd={...old,days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,trips:0,vol:0}; })};
+      else if(emp.group==='sales') pd={...old,records:old.records||[]};
+      else pd={...old,wdays:newDates.map(d=>{ const x=(old.wdays||[]).find(r=>r.d===d.d); return x||{d:d.d,present:false,units:0,ot:0}; })};
       return {...emp,payData:{...emp.payData,[key]:pd}};
     });
     this.setState({periods:newPeriods,employees:newEmp},()=>this.saveToCloud()); this.showToast('อัปเดตช่วงเวลางวดแล้ว');
@@ -665,7 +666,7 @@ class Component extends DCLogic {
     const m=this.state.modal; if(!m||!m.name.trim()){this.showToast('กรุณาระบุชื่อ-สกุล');return;}
     const key=this.state.activePeriodKey; const per=this.getActivePer(); const dates=this.makePeriodDates(per.start,per.end);
     if(m.mode==='add'){
-      const id='emp_'+Date.now(); const base={id,code:m.code,name:m.name,reg:m.reg||'—',truckNo:m.truckNo||'—',group:m.group,role:m.role,status:'รอตรวจสอบ',advance:0,sso:750,other:0,careDeduct:0,payData:{},history:[0,0,0,0,0]};
+      const id='emp_'+Date.now(); const base={id,code:m.code,name:m.name,reg:m.reg||'—',truckNo:m.truckNo||'—',group:m.group,role:m.role,status:'รอตรวจสอบ',payData:{},history:[0,0,0,0,0]};
       let emp;
       if(m.group==='mixer'||m.group==='auxmixer') emp={...base,earlyRate:100,dayRate:80,nightRate:100,cleaning:1000}; 
       else if(m.group==='trailer') emp={...base,trailerRate:200,cleaning:1000};
@@ -737,14 +738,14 @@ class Component extends DCLogic {
       totalCount:emp.length,totalNetStr:money(totalNet),totalTripsStr:totalTrips.toLocaleString(),pendingCount,
       query:s.query||'',onSearch:this.onSearch,rows,isEmptyRoster:rows.length===0,tabs,onAddEmp:this.onAddEmp,onImportFile:this.onImportFile,
       onExportExcel:this.onExportExcel,onExportPDF:this.onExportPDF,
-      d,dInitials:this.init(d.name),dName:d.name,dSub:subOf(d),
+      d:{...d,advance:pd.advance||0,sso:pd.sso??750,careDeduct:pd.careDeduct||0,other:pd.other||0},dInitials:this.init(d.name),dName:d.name,dSub:subOf(d),
       typeLabel:t.label,typeBg:t.bg,typeFg:t.fg,statusLabel:d.status,statBg:st.bg,statFg:st.fg,
       periodStart:s.editPStart,periodEnd:s.editPEnd,onPStartEdit:this.onPStartEdit,onPEndEdit:this.onPEndEdit,onPeriodSave:this.onPeriodSave,
       isDriver:d.group==='mixer'||d.group==='auxmixer'||d.group==='trailer'||d.group==='water',
       isMixer:d.group==='mixer'||d.group==='auxmixer', mixerSectionTitle:d.group==='auxmixer'?'บันทึกการวิ่งรถโม่เสริม':'บันทึกการวิ่งรถมิกซ์',
       isTrailer:d.group==='trailer',isWater:d.group==='water',isSales:d.group==='sales',
       isWorker:d.group==='worker'||d.group==='loader', workerSectionTitle:d.group==='loader'?'การมาทำงาน \u0026 ผลผลิตรายวัน — Loader':'การมาทำงาน \u0026 ผลผลิตรายวัน',
-      onBack:this.onBack,onEditEmp:this.onEditEmp,onDeleteEmp:this.onDeleteEmp,onSaveDraft:this.onSaveDraft,onVerify:this.onVerify,onApprove:this.onApprove,onField:this.onField,onPrint:this.onPrint,
+      onBack:this.onBack,onEditEmp:this.onEditEmp,onDeleteEmp:this.onDeleteEmp,onSaveDraft:this.onSaveDraft,onVerify:this.onVerify,onApprove:this.onApprove,onField:this.onField,onDedField:this.onDedField,onPrint:this.onPrint,
       dayRows,se:c.metric.se,sd:c.metric.sd,sn:c.metric.sn,sq:Math.round((c.metric.sq||0)*10)/10,
       trlRows,tTrips:(pd.days||[]).reduce((a,r)=>a+this.n(r.trips),0),tTons:Math.round((pd.days||[]).reduce((a,r)=>a+this.n(r.tons),0)*10)/10,
       wtrRows,wTrips:(pd.days||[]).reduce((a,r)=>a+this.n(r.trips),0),wVol:(pd.days||[]).reduce((a,r)=>a+this.n(r.vol),0),
