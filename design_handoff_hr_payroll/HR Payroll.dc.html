@@ -287,10 +287,8 @@
           <sc-if value="{{ isWorker }}">
           <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
             <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><span style="width:8px;height:8px;border-radius:50%;background:#6d28d9;"></span><span style="font-size:14px;font-weight:700;">{{ workerSectionTitle }}</span></div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
-              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าแรง /วัน</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="dailyWage" type="number" value="{{ d.dailyWage }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
               <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าผลิต /ชิ้น</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="ratePerUnit" type="number" step="0.1" value="{{ d.ratePerUnit }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
-              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่า OT /ชม.</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="otRate" type="number" value="{{ d.otRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
             </div>
             <div style="display:grid;grid-template-columns:1.2fr 1.1fr 1fr 1fr;gap:8px;font-size:10.5px;font-weight:600;color:#94a3b8;padding-bottom:7px;border-bottom:1px solid #eef2f7;text-align:center;"><div style="text-align:left;">วันที่</div><div>สถานะ</div><div>ผลิต (ชิ้น)</div><div>OT (ชม.)</div></div>
             <div style="max-height:280px;overflow:auto;">
@@ -505,9 +503,9 @@ class Component extends DCLogic {
       segs=[{label:'คอมฯ เครดิต',val:cq*n(emp.creditRate||5),color:'#0ea5e9'},{label:'คอมฯ เงินสด',val:kq*n(emp.cashRate||7),color:'#16a34a'},{label:'คอมฯ สินค้าอื่นๆ',val:oq*n(emp.otherRate||10),color:'#f59e0b'}];
       metric={creditQ:cq,cashQ:kq,otherQ:oq,q:cq+kq+oq};
     } else {
-      // worker + loader — same daily-wage + per-unit-production + OT model
+      // worker + loader — presence & OT hours tracked only (not paid); paid per-unit production only
       let dw=0,tu=0,ot=0; wdays.forEach(r=>{if(r.present){dw++;tu+=n(r.units);}ot+=n(r.ot);});
-      segs=[{label:'ค่าแรงรายวัน',val:dw*n(emp.dailyWage||350),color:'#2563eb'},{label:'ค่าผลิต',val:tu*n(emp.ratePerUnit||2.5),color:'#16a34a'},{label:'ค่าล่วงเวลา',val:ot*n(emp.otRate||70),color:'#14b8a6'}];
+      segs=[{label:'ค่าผลิต',val:tu*n(emp.ratePerUnit||1),color:'#16a34a'}];
       metric={daysWorked:dw,units:tu,ot};
     }
     const gross=segs.reduce((a,b)=>a+b.val,0); return {segs,gross,ded,net:gross-ded,metric};
@@ -672,7 +670,7 @@ class Component extends DCLogic {
       else if(m.group==='trailer') emp={...base,trailerRate:200,cleaning:1000};
       else if(m.group==='water') emp={...base,waterRate:45,cleaning:1000};
       else if(m.group==='sales') emp={...base,creditRate:5,cashRate:7,otherRate:10};
-      else emp={...base,dailyWage:350,ratePerUnit:2.5,otRate:70};
+      else emp={...base,ratePerUnit:1,otRate:70};
       emp.payData[key]=this.emptyPD(emp,dates);
       this.setState(ss=>({employees:[...ss.employees,emp],modal:null,selectedId:id,view:'detail'}),()=>this.saveToCloud());
       this.showToast('เพิ่มพนักงานใหม่แล้ว');
