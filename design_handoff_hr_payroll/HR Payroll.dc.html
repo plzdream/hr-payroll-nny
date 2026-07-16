@@ -58,6 +58,7 @@
           <button onClick="{{ onPeriodSettings }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:5px 14px;font-size:12.5px;font-weight:600;cursor:pointer;color:#334155;font-family:inherit;display:flex;align-items:center;gap:6px;" style-hover="background:#f8fafc;"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></span>{{ month }}</button>
           <button onClick="{{ onNextPeriod }}" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:5px 10px;font-size:13px;cursor:pointer;color:{{ nextColor }};font-family:inherit;" style-hover="background:#e2e8f0;">›</button>
         </div>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:{{ cloudColor }};font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:{{ cloudColor }};"></span>{{ cloudLabel }}</span>
         <span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:600;background:{{ roleBadgeBg }};color:{{ roleBadgeFg }};">{{ roleLabel }}</span>
         <button onClick="{{ onLogout }}" style="background:transparent;border:1px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">ออกจากระบบ</button>
       </div>
@@ -132,6 +133,7 @@
         <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
           <sc-if value="{{ canEdit }}">
             <button onClick="{{ onEditEmp }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">✎ แก้ไขข้อมูล</button>
+            <button onClick="{{ onDeleteEmp }}" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;color:#dc2626;cursor:pointer;font-family:inherit;" style-hover="background:#fee2e2;">🗑 ลบพนักงาน</button>
             <button onClick="{{ onSaveDraft }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">บันทึก</button>
           </sc-if>
           <sc-if value="{{ canVerify }}">
@@ -403,6 +405,12 @@ class Component extends DCLogic {
   constructor(props){
     super(props);
     const PERIODS=[
+      {key:'2569-12',name:'ธันวาคม 2569',label:'26 พ.ย. – 24 ธ.ค. 69',start:'26/11',end:'24/12'},
+      {key:'2569-11',name:'พฤศจิกายน 2569',label:'26 ต.ค. – 24 พ.ย. 69',start:'26/10',end:'24/11'},
+      {key:'2569-10',name:'ตุลาคม 2569',label:'26 ก.ย. – 24 ต.ค. 69',start:'26/09',end:'24/10'},
+      {key:'2569-09',name:'กันยายน 2569',label:'26 ส.ค. – 24 ก.ย. 69',start:'26/08',end:'24/09'},
+      {key:'2569-08',name:'สิงหาคม 2569',label:'26 ก.ค. – 24 ส.ค. 69',start:'26/07',end:'24/08'},
+      {key:'2569-07',name:'กรกฎาคม 2569',label:'26 มิ.ย. – 24 ก.ค. 69',start:'26/06',end:'24/07'},
       {key:'2569-06',name:'มิถุนายน 2569',label:'26 พ.ค. – 24 มิ.ย. 69',start:'26/05',end:'24/06'},
       {key:'2569-05',name:'พฤษภาคม 2569',label:'26 เม.ย. – 24 พ.ค. 69',start:'26/04',end:'24/05'},
       {key:'2569-04',name:'เมษายน 2569',label:'26 มี.ค. – 24 เม.ย. 69',start:'26/03',end:'24/04'},
@@ -410,18 +418,49 @@ class Component extends DCLogic {
       {key:'2569-02',name:'กุมภาพันธ์ 2569',label:'26 ม.ค. – 24 ก.พ. 69',start:'26/01',end:'24/02'},
       {key:'2569-01',name:'มกราคม 2569',label:'26 ธ.ค. – 24 ม.ค. 69',start:'26/12',end:'24/01'},
     ];
-    const curKey='2569-06';
-    const curPer=PERIODS[0];
+    const curKey='2569-07';
+    const curPer=PERIODS.find(p=>p.key===curKey);
     const dates=this.makePeriodDates(curPer.start,curPer.end);
     // Production start: no seeded employees or transactions — add real staff via "+ เพิ่มพนักงาน".
     const employees=[];
+    this.SUPA_URL='https://zgpohpnlneuxycznaibd.supabase.co';
+    this.SUPA_KEY='sb_publishable_v9S3ac5djO9X6YguHrBXHg_jn4-5KwO';
     this.state={
       view:'login',role:null,loginUser:'',loginPass:'',loginError:'',
       filter:'all',query:'',selectedId:null,toast:'',
       periods:PERIODS,activePeriodKey:curKey,
       editPStart:curPer.start,editPEnd:curPer.end,
-      employees,modal:null
+      employees,modal:null,cloudStatus:'connecting'
     };
+  }
+
+  componentDidMount(){ this.loadFromCloud(); }
+
+  async supaFetch(path,opts){
+    const headers=Object.assign({apikey:this.SUPA_KEY,Authorization:'Bearer '+this.SUPA_KEY,'Content-Type':'application/json'},(opts&&opts.headers)||{});
+    return fetch(this.SUPA_URL+'/rest/v1/'+path,Object.assign({},opts,{headers}));
+  }
+  async loadFromCloud(){
+    try{
+      const res=await this.supaFetch('payroll_data?id=eq.main&select=state');
+      if(!res.ok) throw new Error('http '+res.status);
+      const rows=await res.json();
+      if(rows&&rows[0]&&rows[0].state){
+        const saved=rows[0].state;
+        this.setState({employees:saved.employees||[],periods:saved.periods||this.state.periods,cloudStatus:'synced'});
+      } else { this.setState({cloudStatus:'synced'}); }
+    }catch(e){ this.setState({cloudStatus:'offline'}); }
+  }
+  saveToCloud(){
+    clearTimeout(this._saveTimer);
+    this.setState({cloudStatus:'saving'});
+    this._saveTimer=setTimeout(async()=>{
+      try{
+        const body=JSON.stringify({id:'main',state:{employees:this.state.employees,periods:this.state.periods},updated_at:new Date().toISOString()});
+        const res=await this.supaFetch('payroll_data?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates'},body});
+        this.setState({cloudStatus:res.ok?'synced':'offline'});
+      }catch(e){ this.setState({cloudStatus:'offline'}); }
+    },700);
   }
 
   makePeriodDates(start,end){
@@ -437,7 +476,7 @@ class Component extends DCLogic {
 
   n(v){ v=(v===''||v===null||v===undefined)?0:Number(v); return (Number.isNaN(v)||v<0)?0:v; }
   sel(){ const emp=this.state.employees.find(e=>e.id===this.state.selectedId)||this.state.employees[0]; return emp||{id:'_none',group:'worker',name:'',code:'',reg:'—',truckNo:'—',role:'',status:'รอตรวจสอบ',payData:{},history:[]}; }
-  patch(fn){ this.setState(s=>({employees:s.employees.map(e=>e.id===s.selectedId?fn(e):e)})); }
+  patch(fn){ this.setState(s=>({employees:s.employees.map(e=>e.id===s.selectedId?fn(e):e)}),()=>this.saveToCloud()); }
   showToast(msg){ this.setState({toast:msg}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2800); }
   init(name){ const p=(name||'').replace(/^(นางสาว|นาย|นาง)\s*/,'').trim().split(/\s+/); return (p[0]?p[0][0]:'')+(p[1]?p[1][0]:''); }
 
@@ -514,7 +553,7 @@ class Component extends DCLogic {
       else pd={wdays:newDates.map(d=>{ const x=(old.wdays||[]).find(r=>r.d===d.d); return x||{d:d.d,present:false,units:0,ot:0}; })};
       return {...emp,payData:{...emp.payData,[key]:pd}};
     });
-    this.setState({periods:newPeriods,employees:newEmp}); this.showToast('อัปเดตช่วงเวลางวดแล้ว');
+    this.setState({periods:newPeriods,employees:newEmp},()=>this.saveToCloud()); this.showToast('อัปเดตช่วงเวลางวดแล้ว');
   };
 
   updateDay=(i,f,v)=>{ const val=this.n(v); this.patchPD(pd=>({...pd,days:pd.days.map((r,j)=>j===i?{...r,[f]:val}:r)})); };
@@ -619,6 +658,7 @@ class Component extends DCLogic {
 
   onAddEmp=()=>this.setState({modal:{mode:'add',empId:null,name:'',code:'',group:'mixer',truckNo:'',reg:'',role:''}});
   onEditEmp=()=>{ const d=this.sel(); this.setState({modal:{mode:'edit',empId:d.id,name:d.name,code:d.code||'',group:d.group,truckNo:d.truckNo||'',reg:d.reg||'',role:d.role||''}}); };
+  onDeleteEmp=()=>{ const d=this.sel(); if(!d||!d.id||d.id==='_none')return; if(!window.confirm('ลบพนักงาน "'+d.name+'" ใช่หรือไม่? การลบนี้ไม่สามารถย้อนกลับได้')) return; this.setState(s=>({employees:s.employees.filter(e=>e.id!==d.id),view:'roster',selectedId:null}),()=>this.saveToCloud()); this.showToast('ลบพนักงานแล้ว'); };
   onModalClose=()=>this.setState({modal:null});
   onModal=(e)=>{ const map={mName:'name',mCode:'code',mRole:'role',mTruckNo:'truckNo',mReg:'reg'}; const k=map[e.target.name]; if(k) this.setState(ss=>({modal:{...ss.modal,[k]:e.target.value}})); };
   onModalSave=()=>{
@@ -633,10 +673,10 @@ class Component extends DCLogic {
       else if(m.group==='sales') emp={...base,creditRate:5,cashRate:7,otherRate:10};
       else emp={...base,dailyWage:350,ratePerUnit:2.5,otRate:70};
       emp.payData[key]=this.emptyPD(emp,dates);
-      this.setState(ss=>({employees:[...ss.employees,emp],modal:null,selectedId:id,view:'detail'}));
+      this.setState(ss=>({employees:[...ss.employees,emp],modal:null,selectedId:id,view:'detail'}),()=>this.saveToCloud());
       this.showToast('เพิ่มพนักงานใหม่แล้ว');
     } else {
-      this.setState(ss=>({employees:ss.employees.map(e=>e.id===m.empId?{...e,name:m.name,code:m.code,truckNo:m.truckNo,reg:m.reg,role:m.role}:e),modal:null}));
+      this.setState(ss=>({employees:ss.employees.map(e=>e.id===m.empId?{...e,name:m.name,code:m.code,truckNo:m.truckNo,reg:m.reg,role:m.role}:e),modal:null}),()=>this.saveToCloud());
       this.showToast('อัปเดตข้อมูลพนักงานแล้ว');
     }
   };
@@ -688,6 +728,8 @@ class Component extends DCLogic {
       loginUser:s.loginUser,loginPass:s.loginPass,loginError:s.loginError||'',
       onLoginUser:this.onLoginUser,onLoginPass:this.onLoginPass,onLogin:this.onLogin,onLogout:this.onLogout,
       roleLabel:ROLE_LABELS[role]||'',roleBadgeBg:ROLE_BG[role]||'#f1f5f9',roleBadgeFg:ROLE_FG[role]||'#64748b',
+      cloudLabel:{connecting:'กำลังเชื่อมต่อ...',synced:'ซิงค์แล้ว',saving:'กำลังบันทึก...',offline:'ออฟไลน์'}[s.cloudStatus]||'',
+      cloudColor:{connecting:'#94a3b8',synced:'#16a34a',saving:'#2563eb',offline:'#dc2626'}[s.cloudStatus]||'#94a3b8',
       month:per.name,activePeriodLabel:per.label,nextColor:perIdx>0?'#475569':'#cbd5e1',
       onPrevPeriod:this.onPrevPeriod,onNextPeriod:this.onNextPeriod,onPeriodSettings:this.onPeriodSettings,
       canEdit,canVerify,canApprove,readOnly,roBg,
@@ -702,7 +744,7 @@ class Component extends DCLogic {
       isMixer:d.group==='mixer'||d.group==='auxmixer', mixerSectionTitle:d.group==='auxmixer'?'บันทึกการวิ่งรถโม่เสริม':'บันทึกการวิ่งรถมิกซ์',
       isTrailer:d.group==='trailer',isWater:d.group==='water',isSales:d.group==='sales',
       isWorker:d.group==='worker'||d.group==='loader', workerSectionTitle:d.group==='loader'?'การมาทำงาน \u0026 ผลผลิตรายวัน — Loader':'การมาทำงาน \u0026 ผลผลิตรายวัน',
-      onBack:this.onBack,onEditEmp:this.onEditEmp,onSaveDraft:this.onSaveDraft,onVerify:this.onVerify,onApprove:this.onApprove,onField:this.onField,onPrint:this.onPrint,
+      onBack:this.onBack,onEditEmp:this.onEditEmp,onDeleteEmp:this.onDeleteEmp,onSaveDraft:this.onSaveDraft,onVerify:this.onVerify,onApprove:this.onApprove,onField:this.onField,onPrint:this.onPrint,
       dayRows,se:c.metric.se,sd:c.metric.sd,sn:c.metric.sn,sq:Math.round((c.metric.sq||0)*10)/10,
       trlRows,tTrips:(pd.days||[]).reduce((a,r)=>a+this.n(r.trips),0),tTons:Math.round((pd.days||[]).reduce((a,r)=>a+this.n(r.tons),0)*10)/10,
       wtrRows,wTrips:(pd.days||[]).reduce((a,r)=>a+this.n(r.trips),0),wVol:(pd.days||[]).reduce((a,r)=>a+this.n(r.vol),0),
