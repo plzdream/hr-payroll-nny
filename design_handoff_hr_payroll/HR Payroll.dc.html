@@ -26,9 +26,10 @@
 
 <!-- LOGIN -->
 <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
-<div style="min-height:100vh;background:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'IBM Plex Sans Thai',sans-serif;padding:24px;">
+<div style="min-height:100vh;background:linear-gradient(rgba(15,23,42,.78),rgba(15,23,42,.88)),url('assets/login-bg.jpg') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'IBM Plex Sans Thai',sans-serif;padding:24px;">
   <div style="text-align:center;margin-bottom:28px;">
-    <div style="width:58px;height:58px;border-radius:15px;background:#2563eb;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;margin:0 auto 14px;box-shadow:0 8px 24px rgba(37,99,235,.4);">NNY</div>
+    <img src="assets/nny-logo.png" alt="NNY Materials" style="height:64px;margin:0 auto 14px;display:block;">
+
     <div style="color:#f1f5f9;font-size:20px;font-weight:700;">ระบบค่าตอบแทนพนักงาน</div>
     <div style="color:#64748b;font-size:13px;margin-top:4px;">บริษัท เอ็นเอ็นวาย แมททีเรียลส์ จำกัด</div>
   </div>
@@ -49,7 +50,8 @@
   <div style="background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:40;">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:34px;height:34px;border-radius:8px;background:#1e293b;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex:none;">NNY</div>
+        <img src="assets/nny-logo.png" alt="NNY Materials" style="height:32px;flex:none;">
+
         <span style="font-size:15px;font-weight:700;">ระบบค่าตอบแทน HR</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
@@ -310,14 +312,16 @@
           </sc-if>
 
           <!-- DEDUCTIONS — drivers only -->
-          <sc-if value="{{ isDriver }}">
+          <sc-if value="{{ hasDeductions }}">
           <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
             <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;"><span style="width:8px;height:8px;border-radius:50%;background:#dc2626;"></span><span style="font-size:14px;font-weight:700;">รายการหัก</span></div>
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
               <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">เบิกล่วงหน้า</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="advance" type="number" value="{{ d.advance }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
               <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ประกันสังคม</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="sso" type="number" value="{{ d.sso }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <sc-if value="{{ isDriver }}">
               <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">หักค่าดูแลรถ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="careDeduct" type="number" value="{{ d.careDeduct }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
               <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">อื่น ๆ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="other" type="number" value="{{ d.other }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              </sc-if>
             </div>
           </div>
           </sc-if>
@@ -332,7 +336,7 @@
           </div>
           <div style="height:1px;background:#eef2f7;margin:16px 0;"></div>
           <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;"><span style="color:#64748b;">รายได้รวม</span><span style="font-family:'IBM Plex Mono';font-weight:600;color:#16a34a;">{{ grossStr }}</span></div>
-          <sc-if value="{{ isDriver }}"><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#64748b;">รวมหัก</span><span style="font-family:'IBM Plex Mono';font-weight:600;color:#dc2626;">−{{ dedStr }}</span></div></sc-if>
+          <sc-if value="{{ hasDeductions }}"><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#64748b;">รวมหัก</span><span style="font-family:'IBM Plex Mono';font-weight:600;color:#dc2626;">−{{ dedStr }}</span></div></sc-if>
           <div style="margin-top:16px;">
             <div style="font-size:10.5px;font-weight:600;color:#94a3b8;letter-spacing:.03em;margin-bottom:7px;">โครงสร้างรายได้</div>
             <div style="height:11px;border-radius:6px;background:#f1f5f9;overflow:hidden;display:flex;">
@@ -480,7 +484,7 @@ class Component extends DCLogic {
 
   getActivePer(){ return this.state.periods.find(p=>p.key===this.state.activePeriodKey)||this.state.periods[0]; }
   getPD(emp){ const key=this.state.activePeriodKey; if(!emp.payData[key]){const per=this.getActivePer();const dates=this.makePeriodDates(per.start,per.end);emp.payData[key]=this.emptyPD(emp,dates);} return emp.payData[key]; }
-  emptyPD(emp,dates){ if(emp.group==='mixer'||emp.group==='auxmixer') return {days:dates.map(d=>({d:d.d,early:0,day:0,night:0,q:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='trailer') return {days:dates.map(d=>({d:d.d,trips:0,tons:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='water') return {days:dates.map(d=>({d:d.d,trips:0,vol:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='sales') return {records:[]}; return {wdays:dates.map(d=>({d:d.d,present:false,units:0,ot:0}))}; }
+  emptyPD(emp,dates){ if(emp.group==='mixer'||emp.group==='auxmixer') return {days:dates.map(d=>({d:d.d,early:0,day:0,night:0,q:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='trailer') return {days:dates.map(d=>({d:d.d,trips:0,tons:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='water') return {days:dates.map(d=>({d:d.d,trips:0,vol:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='sales') return {records:[]}; return {wdays:dates.map(d=>({d:d.d,present:false,units:0,ot:0})),advance:0,sso:750}; }
 
   calcWithData(emp,pd){
     if(!pd) return {segs:[],gross:0,ded:0,net:0,metric:{}};
@@ -506,13 +510,27 @@ class Component extends DCLogic {
       // worker + loader — presence & OT hours tracked only (not paid); paid per-unit production only
       let dw=0,tu=0,ot=0; wdays.forEach(r=>{if(r.present){dw++;tu+=n(r.units);}ot+=n(r.ot);});
       segs=[{label:'ค่าผลิต',val:tu*n(emp.ratePerUnit||1),color:'#16a34a'}];
-      metric={daysWorked:dw,units:tu,ot};
+      ded=n(pd.advance)+n(pd.sso); metric={daysWorked:dw,units:tu,ot};
     }
     const gross=segs.reduce((a,b)=>a+b.val,0); return {segs,gross,ded,net:gross-ded,metric};
   }
   calcEmp(emp){ return this.calcWithData(emp,this.getPD(emp)); }
 
   patchPD(fn){ const key=this.state.activePeriodKey; this.patch(emp=>{ const pd=emp.payData[key]||{}; return {...emp,payData:{...emp.payData,[key]:fn(pd)}}; }); }
+  clearPeriods(keys){
+    const per=this.state.periods;
+    const newEmp=this.state.employees.map(emp=>{
+      const pd={...emp.payData};
+      keys.forEach(key=>{
+        const p=per.find(x=>x.key===key); if(!p) return;
+        const dates=this.makePeriodDates(p.start,p.end);
+        pd[key]=this.emptyPD(emp,dates);
+      });
+      return {...emp,payData:pd};
+    });
+    this.setState({employees:newEmp},()=>this.saveToCloud());
+    this.showToast('เคลียร์ข้อมูล ม.ค.–มิ.ย. 2569 แล้ว');
+  }
 
   onLoginUser=(e)=>this.setState({loginUser:e.target.value});
   onLoginPass=(e)=>this.setState({loginPass:e.target.value});
@@ -740,6 +758,7 @@ class Component extends DCLogic {
       typeLabel:t.label,typeBg:t.bg,typeFg:t.fg,statusLabel:d.status,statBg:st.bg,statFg:st.fg,
       periodStart:s.editPStart,periodEnd:s.editPEnd,onPStartEdit:this.onPStartEdit,onPEndEdit:this.onPEndEdit,onPeriodSave:this.onPeriodSave,
       isDriver:d.group==='mixer'||d.group==='auxmixer'||d.group==='trailer'||d.group==='water',
+      hasDeductions:d.group==='mixer'||d.group==='auxmixer'||d.group==='trailer'||d.group==='water'||d.group==='worker'||d.group==='loader',
       isMixer:d.group==='mixer'||d.group==='auxmixer', mixerSectionTitle:d.group==='auxmixer'?'บันทึกการวิ่งรถโม่เสริม':'บันทึกการวิ่งรถมิกซ์',
       isTrailer:d.group==='trailer',isWater:d.group==='water',isSales:d.group==='sales',
       isWorker:d.group==='worker'||d.group==='loader', workerSectionTitle:d.group==='loader'?'การมาทำงาน \u0026 ผลผลิตรายวัน — Loader':'การมาทำงาน \u0026 ผลผลิตรายวัน',
