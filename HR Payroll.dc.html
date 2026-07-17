@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type=number] { -moz-appearance: textfield; }
+  input::placeholder { color: #cbd5e1; }
+  ::-webkit-scrollbar { width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:6px; }
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#1e293b"/><text x="100" y="115" font-size="54" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="sans-serif">NNY</text></svg></template>
+
+<!-- LOGIN -->
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;background:linear-gradient(rgba(15,23,42,.78),rgba(15,23,42,.88)),url('assets/login-bg.jpg') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'IBM Plex Sans Thai',sans-serif;padding:24px;">
+  <div style="text-align:center;margin-bottom:28px;">
+    <img src="assets/nny-logo.png" alt="NNY Materials" style="height:64px;margin:0 auto 14px;display:block;">
+
+    <div style="color:#f1f5f9;font-size:20px;font-weight:700;">ระบบค่าตอบแทนพนักงาน</div>
+    <div style="color:#64748b;font-size:13px;margin-top:4px;">บริษัท เอ็นเอ็นวาย แมททีเรียลส์ จำกัด</div>
+  </div>
+  <div style="background:#1e293b;border-radius:16px;padding:32px;width:360px;max-width:94vw;border:1px solid #334155;box-shadow:0 24px 64px rgba(0,0,0,.4);">
+    <label style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px;"><span style="font-size:12px;font-weight:600;color:#94a3b8;">ชื่อผู้ใช้</span><input value="{{ loginUser }}" onChange="{{ onLoginUser }}" placeholder="username" style="background:#0f172a;border:1px solid #334155;border-radius:9px;padding:12px 14px;color:#e2e8f0;font-size:14px;outline:none;font-family:inherit;" style-focus="border-color:#2563eb;"></label>
+    <label style="display:flex;flex-direction:column;gap:7px;margin-bottom:20px;"><span style="font-size:12px;font-weight:600;color:#94a3b8;">รหัสผ่าน</span><input type="password" value="{{ loginPass }}" onChange="{{ onLoginPass }}" placeholder="••••••••" style="background:#0f172a;border:1px solid #334155;border-radius:9px;padding:12px 14px;color:#e2e8f0;font-size:14px;outline:none;font-family:inherit;" style-focus="border-color:#2563eb;"></label>
+    <sc-if value="{{ loginError }}"><div style="color:#f87171;font-size:12.5px;margin-bottom:14px;text-align:center;background:rgba(239,68,68,.08);border-radius:8px;padding:9px;">{{ loginError }}</div></sc-if>
+    <button onClick="{{ onLogin }}" style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;" style-hover="background:#1d4ed8;">เข้าสู่ระบบ</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- APP -->
+<sc-if value="{{ isApp }}">
+<div style="min-height:100vh;background:#eef2f7;font-family:'IBM Plex Sans Thai',sans-serif;color:#1e293b;">
+
+  <!-- Header -->
+  <div style="background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:40;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img src="assets/nny-logo.png" alt="NNY Materials" style="height:32px;flex:none;">
+
+        <span style="font-size:15px;font-weight:700;">ระบบค่าตอบแทน HR</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:3px;">
+          <button onClick="{{ onPrevPeriod }}" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:5px 10px;font-size:13px;cursor:pointer;color:#475569;font-family:inherit;" style-hover="background:#e2e8f0;">‹</button>
+          <button onClick="{{ onPeriodSettings }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:5px 14px;font-size:12.5px;font-weight:600;cursor:pointer;color:#334155;font-family:inherit;display:flex;align-items:center;gap:6px;" style-hover="background:#f8fafc;"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></span>{{ month }}</button>
+          <button onClick="{{ onNextPeriod }}" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:5px 10px;font-size:13px;cursor:pointer;color:{{ nextColor }};font-family:inherit;" style-hover="background:#e2e8f0;">›</button>
+        </div>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:{{ cloudColor }};font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:{{ cloudColor }};"></span>{{ cloudLabel }}</span>
+        <span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:600;background:{{ roleBadgeBg }};color:{{ roleBadgeFg }};">{{ roleLabel }}</span>
+        <button onClick="{{ onLogout }}" style="background:transparent;border:1px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">ออกจากระบบ</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1280px;margin:0 auto;padding:22px 24px 60px;">
+
+    <!-- ROSTER -->
+    <sc-if value="{{ isRoster }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
+        <div>
+          <div style="font-size:19px;font-weight:700;">รายชื่อพนักงาน</div>
+          <div style="font-size:12.5px;color:#94a3b8;margin-top:2px;">{{ activePeriodLabel }}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:0 12px;">
+            <span style="color:#94a3b8;font-size:13px;">⌕</span>
+            <input value="{{ query }}" onChange="{{ onSearch }}" placeholder="ค้นหาชื่อ / รหัส…" style="border:none;outline:none;background:transparent;padding:9px 2px;font-size:13px;width:180px;color:#1e293b;font-family:inherit;">
+          </div>
+          <button onClick="{{ onExportExcel }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">⤓ สรุป Excel</button>
+          <button onClick="{{ onExportPDF }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">⎙ สรุป PDF</button>
+          <sc-if value="{{ canEdit }}">
+            <label style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">⤓ นำเข้า Excel<input type="file" accept=".xlsx,.xls" onChange="{{ onImportFile }}" style="display:none;"></label>
+            <button onClick="{{ onAddEmp }}" style="background:#2563eb;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" style-hover="background:#1d4ed8;">+ เพิ่มพนักงาน</button>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:17px 19px;box-shadow:0 1px 3px rgba(15,23,42,.04);"><div style="font-size:12px;font-weight:600;color:#64748b;">พนักงานทั้งหมด</div><div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono';margin-top:6px;">{{ totalCount }}</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">รถมิกซ์ · เทรลเลอร์ · รถน้ำ · เซลล์ · พนักงาน</div></div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:17px 19px;box-shadow:0 1px 3px rgba(15,23,42,.04);"><div style="font-size:12px;font-weight:600;color:#64748b;">ยอดค่าตอบแทนรวม</div><div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono';margin-top:6px;color:#16a34a;">{{ totalNetStr }}</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">{{ activePeriodLabel }}</div></div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:17px 19px;box-shadow:0 1px 3px rgba(15,23,42,.04);"><div style="font-size:12px;font-weight:600;color:#64748b;">รวมเที่ยววิ่ง</div><div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono';margin-top:6px;">{{ totalTripsStr }}</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">งวดนี้ทั้งหมด</div></div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:17px 19px;box-shadow:0 1px 3px rgba(15,23,42,.04);"><div style="font-size:12px;font-weight:600;color:#64748b;">รอตรวจสอบ</div><div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono';margin-top:6px;color:#b45309;">{{ pendingCount }}</div><div style="font-size:12px;color:#94a3b8;margin-top:2px;">รายการรออนุมัติ</div></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6">
+          <button onClick="{{ t.onClick }}" style="display:flex;align-items:center;gap:8px;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.fg }};border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">{{ t.label }}<span style="font-family:'IBM Plex Mono';font-size:11px;background:{{ t.cBg }};color:{{ t.cFg }};border-radius:20px;padding:1px 8px;">{{ t.count }}</span></button>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+        <div style="display:grid;grid-template-columns:2.5fr 1.4fr 1fr 1.1fr .9fr 1.1fr 1.1fr .45fr;gap:10px;padding:12px 22px;border-bottom:1px solid #eef2f7;font-size:11px;font-weight:600;letter-spacing:.03em;color:#94a3b8;">
+          <div>พนักงาน</div><div>กลุ่มงาน</div><div style="text-align:right;">ผลงาน</div><div style="text-align:right;">รายได้</div><div style="text-align:right;">หัก</div><div style="text-align:right;">ค่าตอบแทน</div><div>สถานะ</div><div></div>
+        </div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+          <div onClick="{{ r.onView }}" style="display:grid;grid-template-columns:2.5fr 1.4fr 1fr 1.1fr .9fr 1.1fr 1.1fr .45fr;gap:10px;padding:14px 22px;border-bottom:1px solid #f1f5f9;align-items:center;cursor:pointer;" style-hover="background:#f8fafc;">
+            <div style="display:flex;align-items:center;gap:11px;min-width:0;"><div style="width:38px;height:38px;flex:none;border-radius:10px;background:{{ r.avBg }};color:{{ r.avFg }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">{{ r.initials }}</div><div style="min-width:0;"><div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.name }}</div><div style="font-size:11px;color:#94a3b8;font-family:'IBM Plex Mono';margin-top:1px;">{{ r.sub }}</div></div></div>
+            <div><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:{{ r.typeBg }};color:{{ r.typeFg }};">{{ r.typeLabel }}</span></div>
+            <div style="text-align:right;font-family:'IBM Plex Mono';font-size:13px;color:#475569;">{{ r.metric }}</div>
+            <div style="text-align:right;font-family:'IBM Plex Mono';font-size:13px;color:#16a34a;">{{ r.gross }}</div>
+            <div style="text-align:right;font-family:'IBM Plex Mono';font-size:13px;color:#dc2626;">{{ r.ded }}</div>
+            <div style="text-align:right;font-family:'IBM Plex Mono';font-size:14px;font-weight:600;">{{ r.net }}</div>
+            <div><span style="display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:{{ r.stBg }};color:{{ r.stFg }};">{{ r.status }}</span></div>
+            <div style="text-align:right;color:#cbd5e1;font-size:16px;">›</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ isEmptyRoster }}">
+          <div style="padding:60px 22px;text-align:center;color:#94a3b8;font-size:13.5px;">ยังไม่มีข้อมูลพนักงาน — กด “+ เพิ่มพนักงาน” เพื่อเริ่มต้นบันทึกข้อมูลจริง</div>
+        </sc-if>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- DETAIL -->
+    <sc-if value="{{ isDetail }}">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
+        <button onClick="{{ onBack }}" style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">‹ กลับ</button>
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+          <sc-if value="{{ canEdit }}">
+            <button onClick="{{ onEditEmp }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">✎ แก้ไขข้อมูล</button>
+            <button onClick="{{ onDeleteEmp }}" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;color:#dc2626;cursor:pointer;font-family:inherit;" style-hover="background:#fee2e2;">🗑 ลบพนักงาน</button>
+            <button onClick="{{ onSaveDraft }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">บันทึก</button>
+          </sc-if>
+          <sc-if value="{{ canVerify }}">
+            <button onClick="{{ onVerify }}" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:600;color:#15803d;cursor:pointer;font-family:inherit;" style-hover="background:#dcfce7;">✓ ตรวจสอบ</button>
+          </sc-if>
+          <sc-if value="{{ canApprove }}">
+            <button onClick="{{ onApprove }}" style="background:#2563eb;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" style-hover="background:#1d4ed8;">✓ อนุมัติ</button>
+          </sc-if>
+          <button onClick="{{ onPrint }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">⎙ พิมพ์สลิป</button>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div style="width:50px;height:50px;flex:none;border-radius:13px;background:{{ typeBg }};color:{{ typeFg }};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;">{{ dInitials }}</div>
+        <div>
+          <div style="font-size:21px;font-weight:700;">{{ dName }}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:#94a3b8;font-family:'IBM Plex Mono';">{{ dSub }}</span>
+            <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:{{ typeBg }};color:{{ typeFg }};">{{ typeLabel }}</span>
+            <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:{{ statBg }};color:{{ statFg }};">{{ statusLabel }}</span>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 14px;font-size:12.5px;color:#64748b;">
+          งวด:
+          <input value="{{ periodStart }}" onChange="{{ onPStartEdit }}" readOnly="{{ readOnly }}" placeholder="DD/MM" maxlength="5" style="border:none;outline:none;background:transparent;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;color:#334155;width:48px;text-align:center;" style-focus="text-decoration:underline;">
+          <span style="color:#cbd5e1;">—</span>
+          <input value="{{ periodEnd }}" onChange="{{ onPEndEdit }}" readOnly="{{ readOnly }}" placeholder="DD/MM" maxlength="5" style="border:none;outline:none;background:transparent;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;color:#334155;width:48px;text-align:center;" style-focus="text-decoration:underline;">
+          <sc-if value="{{ canEdit }}">
+            <button onClick="{{ onPeriodSave }}" style="background:#2563eb;color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;" style-hover="background:#1d4ed8;">ตั้งค่า</button>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:18px;align-items:start;">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <!-- MIXER -->
+          <sc-if value="{{ isMixer }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb;"></span><span style="font-size:14px;font-weight:700;">{{ mixerSectionTitle }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ก่อน 8:00 /เที่ยว</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="earlyRate" type="number" value="{{ d.earlyRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">8:00-17:00 /เที่ยว</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="dayRate" type="number" value="{{ d.dayRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">หลัง 17:00 /เที่ยว</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="nightRate" type="number" value="{{ d.nightRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าดูแลรถ /งวด</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="cleaning" type="number" value="{{ d.cleaning }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+            </div>
+            <div style="display:grid;grid-template-columns:1.1fr .9fr .9fr .9fr .9fr;gap:7px;font-size:10.5px;font-weight:600;color:#94a3b8;padding-bottom:7px;border-bottom:1px solid #eef2f7;text-align:center;"><div style="text-align:left;">วันที่</div><div>ก่อน 8:00</div><div>8:00-17:00</div><div>หลัง 17:00</div><div>คิว (ม³)</div></div>
+            <div style="max-height:280px;overflow:auto;">
+              <sc-for list="{{ dayRows }}" as="r" hint-placeholder-count="12">
+                <div style="display:grid;grid-template-columns:1.1fr .9fr .9fr .9fr .9fr;gap:7px;align-items:center;padding:4px 0;border-bottom:1px solid #f5f7fa;">
+                  <div style="font-family:'IBM Plex Mono';font-size:12px;color:#64748b;">{{ r.d }}</div>
+                  <input type="number" value="{{ r.early }}" onChange="{{ r.onEarly }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#7c3aed;">
+                  <input type="number" value="{{ r.day }}" onChange="{{ r.onDay }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#2563eb;">
+                  <input type="number" value="{{ r.night }}" onChange="{{ r.onNight }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#6366f1;">
+                  <input type="number" step="0.5" value="{{ r.q }}" onChange="{{ r.onQ }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#0ea5e9;">
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1.1fr .9fr .9fr .9fr .9fr;gap:7px;padding-top:9px;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;text-align:center;border-top:2px solid #eef2f7;margin-top:5px;">
+              <div style="text-align:left;font-family:'IBM Plex Sans Thai';color:#64748b;font-size:12px;">รวมงวด</div>
+              <div style="color:#7c3aed;">{{ se }}</div><div style="color:#2563eb;">{{ sd }}</div><div style="color:#6366f1;">{{ sn }}</div><div style="color:#0ea5e9;">{{ sq }}</div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- TRAILER -->
+          <sc-if value="{{ isTrailer }}">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><span style="width:8px;height:8px;border-radius:50%;background:#4338ca;"></span><span style="font-size:14px;font-weight:700;">บันทึกการวิ่งรถ — เทรลเลอร์</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าเที่ยว /เที่ยว</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="trailerRate" type="number" value="{{ d.trailerRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าดูแลรถ /งวด</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="cleaning" type="number" value="{{ d.cleaning }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+            </div>
+            <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;font-size:10.5px;font-weight:600;color:#94a3b8;padding-bottom:7px;border-bottom:1px solid #eef2f7;text-align:center;"><div style="text-align:left;">วันที่</div><div>จำนวนเที่ยว</div><div>น้ำหนัก (ตัน)</div></div>
+            <div style="max-height:280px;overflow:auto;">
+              <sc-for list="{{ trlRows }}" as="r" hint-placeholder-count="12">
+                <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid #f5f7fa;">
+                  <div style="font-family:'IBM Plex Mono';font-size:12px;color:#64748b;">{{ r.d }}</div>
+                  <input type="number" value="{{ r.trips }}" onChange="{{ r.onTrips }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#4338ca;">
+                  <input type="number" step="0.1" value="{{ r.tons }}" onChange="{{ r.onTons }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#0e7490;">
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;padding-top:9px;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;text-align:center;border-top:2px solid #eef2f7;margin-top:5px;">
+              <div style="text-align:left;font-family:'IBM Plex Sans Thai';color:#64748b;font-size:12px;">รวมงวด</div>
+              <div style="color:#4338ca;">{{ tTrips }}</div><div style="color:#0e7490;">{{ tTons }}</div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- WATER TRUCK -->
+          <sc-if value="{{ isWater }}">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><span style="width:8px;height:8px;border-radius:50%;background:#0284c7;"></span><span style="font-size:14px;font-weight:700;">บันทึกการวิ่งรถน้ำ</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าเที่ยว /เที่ยว</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="waterRate" type="number" value="{{ d.waterRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าดูแลรถ /งวด</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="cleaning" type="number" value="{{ d.cleaning }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+            </div>
+            <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;font-size:10.5px;font-weight:600;color:#94a3b8;padding-bottom:7px;border-bottom:1px solid #eef2f7;text-align:center;"><div style="text-align:left;">วันที่</div><div>จำนวนเที่ยว</div><div>ปริมาณน้ำ (ถัง)</div></div>
+            <div style="max-height:280px;overflow:auto;">
+              <sc-for list="{{ wtrRows }}" as="r" hint-placeholder-count="12">
+                <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid #f5f7fa;">
+                  <div style="font-family:'IBM Plex Mono';font-size:12px;color:#64748b;">{{ r.d }}</div>
+                  <input type="number" value="{{ r.trips }}" onChange="{{ r.onTrips }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#0284c7;">
+                  <input type="number" value="{{ r.vol }}" onChange="{{ r.onVol }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#0ea5e9;">
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;padding-top:9px;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;text-align:center;border-top:2px solid #eef2f7;margin-top:5px;">
+              <div style="text-align:left;font-family:'IBM Plex Sans Thai';color:#64748b;font-size:12px;">รวมงวด</div>
+              <div style="color:#0284c7;">{{ wTrips }}</div><div style="color:#0ea5e9;">{{ wVol }}</div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- SALES -->
+          <sc-if value="{{ isSales }}">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:9px;"><span style="width:8px;height:8px;border-radius:50%;background:#16a34a;"></span><span style="font-size:14px;font-weight:700;">ยอดขายรายลูกค้า</span></div>
+              <sc-if value="{{ canEdit }}"><button onClick="{{ onAddRec }}" style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">+ เพิ่มรายการ</button></sc-if>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">คอมฯ เครดิต /คิว</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="creditRate" type="number" value="{{ d.creditRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">คอมฯ เงินสด /คิว</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="cashRate" type="number" value="{{ d.cashRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">คอมฯ สินค้าอื่นๆ /หน่วย</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="otherRate" type="number" value="{{ d.otherRate }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+            </div>
+            <div style="display:grid;grid-template-columns:1.5fr 1.5fr 1fr .7fr .8fr .8fr .2fr;gap:7px;font-size:10.5px;font-weight:600;color:#94a3b8;padding-bottom:7px;border-bottom:1px solid #eef2f7;"><div>ลูกค้า</div><div>หน่วยงาน / โครงการ</div><div>สินค้า</div><div style="text-align:center;">คิว</div><div style="text-align:center;">ประเภท</div><div style="text-align:center;">จ่าย</div><div></div></div>
+            <div style="max-height:320px;overflow:auto;">
+              <sc-for list="{{ recRows }}" as="r" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:1.5fr 1.5fr 1fr .7fr .8fr .8fr .2fr;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid #f5f7fa;">
+                  <input value="{{ r.cust }}" onChange="{{ r.onCust }}" readOnly="{{ readOnly }}" placeholder="ชื่อลูกค้า" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:6px 8px;font-size:12.5px;color:#1e293b;outline:none;font-family:inherit;background:{{ roBg }};" style-focus="border-color:#16a34a;">
+                  <input value="{{ r.site }}" onChange="{{ r.onSite }}" readOnly="{{ readOnly }}" placeholder="หน่วยงาน / โครงการ" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:6px 8px;font-size:12.5px;color:#1e293b;outline:none;font-family:inherit;background:{{ roBg }};" style-focus="border-color:#16a34a;">
+                  <input value="{{ r.product }}" onChange="{{ r.onProduct }}" readOnly="{{ readOnly }}" placeholder="รหัสสินค้า" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:6px 8px;font-size:12px;color:#1e293b;outline:none;font-family:'IBM Plex Mono';background:{{ roBg }};" style-focus="border-color:#16a34a;">
+                  <input type="number" step="0.5" value="{{ r.qty }}" onChange="{{ r.onQty }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:6px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#16a34a;">
+                  <button onClick="{{ r.onPT }}" style="border:1px solid {{ r.ptBorder }};background:{{ r.ptBg }};color:{{ r.ptFg }};border-radius:20px;padding:5px 4px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;">{{ r.ptLabel }}</button>
+                  <button onClick="{{ r.onKind }}" style="border:1px solid {{ r.kBorder }};background:{{ r.kBg }};color:{{ r.kFg }};border-radius:20px;padding:5px 4px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;">{{ r.kindLabel }}</button>
+                  <sc-if value="{{ canEdit }}"><button onClick="{{ r.onDel }}" style="border:none;background:transparent;color:#e2e8f0;font-size:17px;cursor:pointer;" style-hover="color:#dc2626;">×</button></sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:16px;padding-top:10px;font-size:12px;flex-wrap:wrap;">
+              <span style="color:#64748b;">เครดิต <b style="font-family:'IBM Plex Mono';color:#0e7490;">{{ creditQ }}</b> คิว</span>
+              <span style="color:#64748b;">เงินสด <b style="font-family:'IBM Plex Mono';color:#16a34a;">{{ cashQ }}</b> คิว</span>
+              <span style="color:#64748b;">อื่นๆ <b style="font-family:'IBM Plex Mono';color:#d97706;">{{ otherQ }}</b> หน่วย</span>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- WORKER -->
+          <sc-if value="{{ isWorker }}">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><span style="width:8px;height:8px;border-radius:50%;background:#6d28d9;"></span><span style="font-size:14px;font-weight:700;">{{ workerSectionTitle }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ค่าผลิต /ชิ้น</span><div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#94a3b8;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="ratePerUnit" type="number" step="0.1" value="{{ d.ratePerUnit }}" onChange="{{ onField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+            </div>
+            <div style="display:grid;grid-template-columns:1.2fr 1.1fr 1fr 1fr;gap:8px;font-size:10.5px;font-weight:600;color:#94a3b8;padding-bottom:7px;border-bottom:1px solid #eef2f7;text-align:center;"><div style="text-align:left;">วันที่</div><div>สถานะ</div><div>ผลิต (ชิ้น)</div><div>OT (ชม.)</div></div>
+            <div style="max-height:280px;overflow:auto;">
+              <sc-for list="{{ wdayRows }}" as="r" hint-placeholder-count="12">
+                <div style="display:grid;grid-template-columns:1.2fr 1.1fr 1fr 1fr;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid #f5f7fa;">
+                  <div style="font-family:'IBM Plex Mono';font-size:12px;color:#64748b;">{{ r.d }}</div>
+                  <button onClick="{{ r.onPresent }}" style="border:none;background:{{ r.pBg }};color:{{ r.pFg }};border-radius:7px;padding:6px 4px;font-size:12px;font-weight:600;cursor:{{ r.cursor }};font-family:inherit;">{{ r.pLabel }}</button>
+                  <input type="number" value="{{ r.units }}" onChange="{{ r.onUnits }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#6d28d9;">
+                  <input type="number" step="0.5" value="{{ r.ot }}" onChange="{{ r.onOt }}" readOnly="{{ readOnly }}" style="width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:5px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;outline:none;background:{{ roBg }};" style-focus="border-color:#d97706;">
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:16px;padding-top:10px;font-size:12px;">
+              <span style="color:#64748b;">มาทำงาน <b style="font-family:'IBM Plex Mono';">{{ daysWorked }}</b> วัน</span>
+              <span style="color:#64748b;">ผลิตรวม <b style="font-family:'IBM Plex Mono';color:#16a34a;">{{ totalUnits }}</b> ชิ้น</span>
+              <span style="color:#64748b;">OT <b style="font-family:'IBM Plex Mono';color:#d97706;">{{ wOT }}</b> ชม.</span>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- DEDUCTIONS — drivers only -->
+          <sc-if value="{{ hasDeductions }}">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;"><span style="width:8px;height:8px;border-radius:50%;background:#dc2626;"></span><span style="font-size:14px;font-weight:700;">รายการหัก</span></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">เบิกล่วงหน้า</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="advance" type="number" value="{{ d.advance }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">ประกันสังคม</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="sso" type="number" value="{{ d.sso }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <sc-if value="{{ isDriver }}">
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">หักค่าดูแลรถ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="careDeduct" type="number" value="{{ d.careDeduct }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              <label style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;font-weight:600;color:#64748b;">อื่น ๆ</span><div style="display:flex;align-items:center;border:1px solid #fecaca;border-radius:9px;background:{{ roBg }};"><span style="padding:0 2px 0 9px;color:#f87171;font-family:'IBM Plex Mono';font-size:12px;">฿</span><input name="other" type="number" value="{{ d.other }}" onChange="{{ onDedField }}" readOnly="{{ readOnly }}" style="border:none;outline:none;background:transparent;padding:8px 7px 8px 2px;width:100%;font-family:'IBM Plex Mono';font-size:13px;color:#1e293b;"></div></label>
+              </sc-if>
+            </div>
+          </div>
+          </sc-if>
+        </div>
+
+        <!-- RIGHT summary -->
+        <div style="position:sticky;top:72px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:22px 24px;box-shadow:0 1px 3px rgba(15,23,42,.04);">
+          <div style="font-size:12px;font-weight:600;color:#64748b;letter-spacing:.02em;">ค่าตอบแทนสุทธิ</div>
+          <div style="font-size:33px;font-weight:700;font-family:'IBM Plex Mono';letter-spacing:-.01em;margin-top:6px;color:#2563eb;">{{ netStr }}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;font-size:12px;font-weight:600;color:{{ deltaColor }};">
+            <span>{{ deltaPctStr }}</span><span style="color:#94a3b8;font-weight:500;">เทียบงวดก่อน ({{ deltaStr }})</span>
+          </div>
+          <div style="height:1px;background:#eef2f7;margin:16px 0;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;"><span style="color:#64748b;">รายได้รวม</span><span style="font-family:'IBM Plex Mono';font-weight:600;color:#16a34a;">{{ grossStr }}</span></div>
+          <sc-if value="{{ hasDeductions }}"><div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#64748b;">รวมหัก</span><span style="font-family:'IBM Plex Mono';font-weight:600;color:#dc2626;">−{{ dedStr }}</span></div></sc-if>
+          <div style="margin-top:16px;">
+            <div style="font-size:10.5px;font-weight:600;color:#94a3b8;letter-spacing:.03em;margin-bottom:7px;">โครงสร้างรายได้</div>
+            <div style="height:11px;border-radius:6px;background:#f1f5f9;overflow:hidden;display:flex;">
+              <sc-for list="{{ segView }}" as="s" hint-placeholder-count="4"><div style="height:100%;background:{{ s.color }};width:{{ s.pct }}%;"></div></sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+              <sc-for list="{{ segView }}" as="s" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;">
+                  <span style="display:flex;align-items:center;gap:7px;color:#64748b;"><span style="width:8px;height:8px;flex:none;border-radius:3px;background:{{ s.color }};"></span>{{ s.label }}</span>
+                  <span style="font-family:'IBM Plex Mono';color:#334155;">{{ s.valStr }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="margin-top:18px;">
+            <div style="font-size:10.5px;font-weight:600;color:#94a3b8;letter-spacing:.03em;margin-bottom:9px;">ย้อนหลัง 6 งวด</div>
+            <div style="display:flex;align-items:flex-end;gap:6px;height:68px;">
+              <sc-for list="{{ histBars }}" as="b" hint-placeholder-count="6">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%;">
+                  <div style="width:100%;max-width:22px;border-radius:4px 4px 0 0;height:{{ b.pct }}%;background:{{ b.color }};"></div>
+                  <span style="font-size:9px;color:#94a3b8;">{{ b.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<!-- EMPLOYEE MODAL -->
+<sc-if value="{{ showModal }}">
+<div style="position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:28px;width:500px;max-width:96vw;box-shadow:0 24px 64px rgba(15,23,42,.28);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;"><div style="font-size:17px;font-weight:700;">{{ modalTitle }}</div><button onClick="{{ onModalClose }}" style="border:none;background:#f1f5f9;color:#64748b;border-radius:8px;width:32px;height:32px;font-size:18px;cursor:pointer;font-family:inherit;">×</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <label style="grid-column:1/-1;display:flex;flex-direction:column;gap:7px;"><span style="font-size:12px;font-weight:600;color:#64748b;">ชื่อ-สกุล *</span><input name="mName" value="{{ modal.name }}" onChange="{{ onModal }}" placeholder="ชื่อ นามสกุล" style="border:1px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:14px;color:#1e293b;outline:none;font-family:inherit;" style-focus="border-color:#2563eb;"></label>
+      <label style="display:flex;flex-direction:column;gap:7px;"><span style="font-size:12px;font-weight:600;color:#64748b;">รหัสพนักงาน</span><input name="mCode" value="{{ modal.code }}" onChange="{{ onModal }}" placeholder="67001" style="border:1px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:14px;color:#1e293b;outline:none;font-family:'IBM Plex Mono';" style-focus="border-color:#2563eb;"></label>
+      <label style="display:flex;flex-direction:column;gap:7px;"><span style="font-size:12px;font-weight:600;color:#64748b;">ตำแหน่ง / แผนก</span><input name="mRole" value="{{ modal.role }}" onChange="{{ onModal }}" placeholder="เช่น พนักงาน, ฝ่ายขาย" style="border:1px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:14px;color:#1e293b;outline:none;font-family:inherit;" style-focus="border-color:#2563eb;"></label>
+      <label style="grid-column:1/-1;display:flex;flex-direction:column;gap:8px;"><span style="font-size:12px;font-weight:600;color:#64748b;">กลุ่มงาน</span>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <sc-for list="{{ mgOpts }}" as="g" hint-placeholder-count="5"><button onClick="{{ g.onClick }}" style="flex:1;min-width:90px;border:1px solid {{ g.border }};background:{{ g.bg }};color:{{ g.fg }};border-radius:9px;padding:9px 4px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">{{ g.label }}</button></sc-for>
+        </div>
+      </label>
+      <sc-if value="{{ modalIsVehicle }}">
+        <label style="display:flex;flex-direction:column;gap:7px;"><span style="font-size:12px;font-weight:600;color:#64748b;">เลขรถ / สาย</span><input name="mTruckNo" value="{{ modal.truckNo }}" onChange="{{ onModal }}" placeholder="1, 2, W1…" style="border:1px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:14px;color:#1e293b;outline:none;font-family:'IBM Plex Mono';" style-focus="border-color:#2563eb;"></label>
+        <label style="display:flex;flex-direction:column;gap:7px;"><span style="font-size:12px;font-weight:600;color:#64748b;">ทะเบียนรถ</span><input name="mReg" value="{{ modal.reg }}" onChange="{{ onModal }}" placeholder="53-0601" style="border:1px solid #e2e8f0;border-radius:10px;padding:11px 13px;font-size:14px;color:#1e293b;outline:none;font-family:'IBM Plex Mono';" style-focus="border-color:#2563eb;"></label>
+      </sc-if>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;">
+      <button onClick="{{ onModalClose }}" style="background:#f1f5f9;border:none;color:#64748b;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" style-hover="background:#e2e8f0;">ยกเลิก</button>
+      <button onClick="{{ onModalSave }}" style="background:#2563eb;border:none;color:#fff;border-radius:10px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" style-hover="background:#1d4ed8;">{{ modalBtnLabel }}</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- TOAST -->
+<sc-if value="{{ toast }}">
+<div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:13px 24px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(15,23,42,.22);z-index:300;white-space:nowrap;">{{ toast }}</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const PERIODS=[
+      {key:'2569-12',name:'ธันวาคม 2569',label:'26 พ.ย. – 24 ธ.ค. 69',start:'26/11',end:'24/12'},
+      {key:'2569-11',name:'พฤศจิกายน 2569',label:'26 ต.ค. – 24 พ.ย. 69',start:'26/10',end:'24/11'},
+      {key:'2569-10',name:'ตุลาคม 2569',label:'26 ก.ย. – 24 ต.ค. 69',start:'26/09',end:'24/10'},
+      {key:'2569-09',name:'กันยายน 2569',label:'26 ส.ค. – 24 ก.ย. 69',start:'26/08',end:'24/09'},
+      {key:'2569-08',name:'สิงหาคม 2569',label:'26 ก.ค. – 24 ส.ค. 69',start:'26/07',end:'24/08'},
+      {key:'2569-07',name:'กรกฎาคม 2569',label:'26 มิ.ย. – 24 ก.ค. 69',start:'26/06',end:'24/07'},
+      {key:'2569-06',name:'มิถุนายน 2569',label:'26 พ.ค. – 24 มิ.ย. 69',start:'26/05',end:'24/06'},
+      {key:'2569-05',name:'พฤษภาคม 2569',label:'26 เม.ย. – 24 พ.ค. 69',start:'26/04',end:'24/05'},
+      {key:'2569-04',name:'เมษายน 2569',label:'26 มี.ค. – 24 เม.ย. 69',start:'26/03',end:'24/04'},
+      {key:'2569-03',name:'มีนาคม 2569',label:'26 ก.พ. – 24 มี.ค. 69',start:'26/02',end:'24/03'},
+      {key:'2569-02',name:'กุมภาพันธ์ 2569',label:'26 ม.ค. – 24 ก.พ. 69',start:'26/01',end:'24/02'},
+      {key:'2569-01',name:'มกราคม 2569',label:'26 ธ.ค. – 24 ม.ค. 69',start:'26/12',end:'24/01'},
+    ];
+    const curKey='2569-07';
+    const curPer=PERIODS.find(p=>p.key===curKey);
+    const dates=this.makePeriodDates(curPer.start,curPer.end);
+    // Production start: no seeded employees or transactions — add real staff via "+ เพิ่มพนักงาน".
+    const employees=[];
+    this.SUPA_URL='https://zgpohpnlneuxycznaibd.supabase.co';
+    this.SUPA_KEY='sb_publishable_v9S3ac5djO9X6YguHrBXHg_jn4-5KwO';
+    this.state={
+      view:'login',role:null,loginUser:'',loginPass:'',loginError:'',
+      filter:'all',query:'',selectedId:null,toast:'',
+      periods:PERIODS,activePeriodKey:curKey,
+      editPStart:curPer.start,editPEnd:curPer.end,
+      employees,modal:null,cloudStatus:'connecting'
+    };
+  }
+
+  componentDidMount(){ this.loadFromCloud(); }
+
+  async supaFetch(path,opts){
+    const headers=Object.assign({apikey:this.SUPA_KEY,Authorization:'Bearer '+this.SUPA_KEY,'Content-Type':'application/json'},(opts&&opts.headers)||{});
+    return fetch(this.SUPA_URL+'/rest/v1/'+path,Object.assign({},opts,{headers}));
+  }
+  async loadFromCloud(){
+    try{
+      const res=await this.supaFetch('payroll_data?id=eq.main&select=state');
+      if(!res.ok) throw new Error('http '+res.status);
+      const rows=await res.json();
+      if(rows&&rows[0]&&rows[0].state){
+        const saved=rows[0].state;
+        this.setState({employees:saved.employees||[],periods:saved.periods||this.state.periods,cloudStatus:'synced'});
+      } else { this.setState({cloudStatus:'synced'}); }
+    }catch(e){ this.setState({cloudStatus:'offline'}); }
+  }
+  saveToCloud(){
+    clearTimeout(this._saveTimer);
+    this.setState({cloudStatus:'saving'});
+    this._saveTimer=setTimeout(async()=>{
+      try{
+        const body=JSON.stringify({id:'main',state:{employees:this.state.employees,periods:this.state.periods},updated_at:new Date().toISOString()});
+        const res=await this.supaFetch('payroll_data?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates'},body});
+        this.setState({cloudStatus:res.ok?'synced':'offline'});
+      }catch(e){ this.setState({cloudStatus:'offline'}); }
+    },700);
+  }
+
+  makePeriodDates(start,end){
+    const dim=[0,31,28,31,30,31,30,31,31,30,31,30,31];
+    let [sd,sm]=start.split('/').map(Number), [ed,em]=end.split('/').map(Number);
+    const out=[]; let safe=62;
+    while(safe--){ out.push({d:(sd<10?'0'+sd:''+sd)+'/'+(sm<10?'0'+sm:''+sm)}); if(sd===ed&&sm===em)break; sd++; if(sd>dim[sm]){sd=1;sm=sm===12?1:sm+1;} }
+    return out;
+  }
+  seedMixerDay(idx,i,d){ const skip=(i+idx)%7===6; return {d,early:skip?0:((i*3+idx)%9===0?1:0),day:skip?0:(1+(i+idx)%2),night:skip?0:(((i*2+idx)%7===0)?1:0),q:skip?0:Math.round((4+(i+idx)%4)+(((i+idx)%2)?0.5:0))}; }
+  seedTrlDay(i,d){ const skip=i%7===6; const t=skip?0:(1+i%2); return {d,trips:t,tons:skip?0:Math.round((12+(i%8)*2.5)*t)}; }
+  seedHist(net){ return [0.93,0.99,0.96,1.03,1.0].map(f=>Math.round(net*f)); }
+
+  n(v){ v=(v===''||v===null||v===undefined)?0:Number(v); return (Number.isNaN(v)||v<0)?0:v; }
+  sel(){ const emp=this.state.employees.find(e=>e.id===this.state.selectedId)||this.state.employees[0]; return emp||{id:'_none',group:'worker',name:'',code:'',reg:'—',truckNo:'—',role:'',status:'รอตรวจสอบ',payData:{},history:[]}; }
+  patch(fn){ this.setState(s=>({employees:s.employees.map(e=>e.id===s.selectedId?fn(e):e)}),()=>this.saveToCloud()); }
+  showToast(msg){ this.setState({toast:msg}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2800); }
+  init(name){ const p=(name||'').replace(/^(นางสาว|นาย|นาง)\s*/,'').trim().split(/\s+/); return (p[0]?p[0][0]:'')+(p[1]?p[1][0]:''); }
+
+  getActivePer(){ return this.state.periods.find(p=>p.key===this.state.activePeriodKey)||this.state.periods[0]; }
+  getPD(emp){ const key=this.state.activePeriodKey; if(!emp.payData[key]){const per=this.getActivePer();const dates=this.makePeriodDates(per.start,per.end);emp.payData[key]=this.emptyPD(emp,dates);} return emp.payData[key]; }
+  emptyPD(emp,dates){ if(emp.group==='mixer'||emp.group==='auxmixer') return {days:dates.map(d=>({d:d.d,early:0,day:0,night:0,q:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='trailer') return {days:dates.map(d=>({d:d.d,trips:0,tons:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='water') return {days:dates.map(d=>({d:d.d,trips:0,vol:0})),advance:0,sso:750,careDeduct:0,other:0}; if(emp.group==='sales') return {records:[]}; return {wdays:dates.map(d=>({d:d.d,present:false,units:0,ot:0})),advance:0,sso:750}; }
+
+  calcWithData(emp,pd){
+    if(!pd) return {segs:[],gross:0,ded:0,net:0,metric:{}};
+    const n=this.n.bind(this); const days=pd.days||[], records=pd.records||[], wdays=pd.wdays||[];
+    let segs=[],metric={},ded=0;
+    if(emp.group==='mixer'||emp.group==='auxmixer'){
+      let se=0,sd=0,sn=0,sq=0; days.forEach(r=>{se+=n(r.early);sd+=n(r.day);sn+=n(r.night);sq+=n(r.q);});
+      segs=[{label:'ก่อน 8:00',val:se*n(emp.earlyRate||100),color:'#7c3aed'},{label:'8:00-17:00',val:sd*n(emp.dayRate||80),color:'#2563eb'},{label:'หลัง 17:00',val:sn*n(emp.nightRate||100),color:'#6366f1'},{label:'ค่าดูแลรถ',val:n(emp.cleaning||1000),color:'#14b8a6'}];
+      ded=n(pd.advance)+n(pd.sso)+n(pd.careDeduct)+n(pd.other); metric={trips:se+sd+sn,se,sd,sn,sq};
+    } else if(emp.group==='trailer'){
+      let trips=0,tons=0; days.forEach(r=>{trips+=n(r.trips);tons+=n(r.tons);});
+      segs=[{label:'ค่าเที่ยว',val:trips*n(emp.trailerRate||200),color:'#4338ca'},{label:'ค่าดูแลรถ',val:n(emp.cleaning||1000),color:'#14b8a6'}];
+      ded=n(pd.advance)+n(pd.sso)+n(pd.careDeduct)+n(pd.other); metric={trips,tons};
+    } else if(emp.group==='water'){
+      let trips=0,vol=0; days.forEach(r=>{trips+=n(r.trips);vol+=n(r.vol);});
+      segs=[{label:'ค่าเที่ยวรถน้ำ',val:trips*n(emp.waterRate||45),color:'#0284c7'},{label:'ค่าดูแลรถ',val:n(emp.cleaning||1000),color:'#14b8a6'}];
+      ded=n(pd.advance)+n(pd.sso)+n(pd.careDeduct)+n(pd.other); metric={trips,vol};
+    } else if(emp.group==='sales'){
+      let cq=0,kq=0,oq=0; records.forEach(r=>{if(r.productType==='other')oq+=n(r.qty);else if(r.kind==='credit')cq+=n(r.qty);else kq+=n(r.qty);});
+      segs=[{label:'คอมฯ เครดิต',val:cq*n(emp.creditRate||5),color:'#0ea5e9'},{label:'คอมฯ เงินสด',val:kq*n(emp.cashRate||7),color:'#16a34a'},{label:'คอมฯ สินค้าอื่นๆ',val:oq*n(emp.otherRate||10),color:'#f59e0b'}];
+      metric={creditQ:cq,cashQ:kq,otherQ:oq,q:cq+kq+oq};
+    } else {
+      // worker + loader — presence & OT hours tracked only (not paid); paid per-unit production only
+      let dw=0,tu=0,ot=0; wdays.forEach(r=>{if(r.present){dw++;tu+=n(r.units);}ot+=n(r.ot);});
+      segs=[{label:'ค่าผลิต',val:tu*n(emp.ratePerUnit||1),color:'#16a34a'}];
+      ded=n(pd.advance)+n(pd.sso); metric={daysWorked:dw,units:tu,ot};
+    }
+    const gross=segs.reduce((a,b)=>a+b.val,0); return {segs,gross,ded,net:gross-ded,metric};
+  }
+  calcEmp(emp){ return this.calcWithData(emp,this.getPD(emp)); }
+
+  patchPD(fn){ const key=this.state.activePeriodKey; this.patch(emp=>{ const pd=emp.payData[key]||{}; return {...emp,payData:{...emp.payData,[key]:fn(pd)}}; }); }
+  clearPeriods(keys){
+    const per=this.state.periods;
+    const newEmp=this.state.employees.map(emp=>{
+      const pd={...emp.payData};
+      keys.forEach(key=>{
+        const p=per.find(x=>x.key===key); if(!p) return;
+        const dates=this.makePeriodDates(p.start,p.end);
+        pd[key]=this.emptyPD(emp,dates);
+      });
+      return {...emp,payData:pd};
+    });
+    this.setState({employees:newEmp},()=>this.saveToCloud());
+    this.showToast('เคลียร์ข้อมูล ม.ค.–มิ.ย. 2569 แล้ว');
+  }
+
+  onLoginUser=(e)=>this.setState({loginUser:e.target.value});
+  onLoginPass=(e)=>this.setState({loginPass:e.target.value});
+  onLogin=()=>{
+    const {loginUser:u,loginPass:p}=this.state;
+    const USERS={admin:{pass:'nny12345',role:'admin'},manager:{pass:'nny12345',role:'manager'},maker:{pass:'maker12345',role:'maker'}};
+    const acc=USERS[u.trim().toLowerCase()];
+    if(!acc||acc.pass!==p) return this.setState({loginError:'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'});
+    this.setState({view:'roster',role:acc.role,loginError:''});
+  };
+  onLogout=()=>this.setState({view:'login',role:null,loginUser:'',loginPass:'',loginError:''});
+  onSearch=(e)=>this.setState({query:e.target.value});
+  onField=(e)=>{ const nm=e.target.name,v=this.n(e.target.value); this.patch(emp=>({...emp,[nm]:v})); };
+  onDedField=(e)=>{ const nm=e.target.name,v=this.n(e.target.value); this.patchPD(pd=>({...pd,[nm]:v})); };
+  onBack=()=>this.setState({view:'roster'});
+  onSaveDraft=()=>{ this.patch(e=>({...e,status:'รอตรวจสอบ'})); this.showToast('บันทึกข้อมูลเรียบร้อย'); };
+  onVerify=()=>{ this.patch(e=>({...e,status:'ผ่านการตรวจสอบ'})); this.showToast('ตรวจสอบแล้ว'); };
+  onApprove=()=>{ this.patch(e=>({...e,status:'อนุมัติ'})); this.showToast('อนุมัติค่าตอบแทนแล้ว'); };
+
+  onPrevPeriod=()=>{ const idx=this.state.periods.findIndex(p=>p.key===this.state.activePeriodKey); if(idx<this.state.periods.length-1){ const np=this.state.periods[idx+1]; this.setState({activePeriodKey:np.key,editPStart:np.start,editPEnd:np.end}); } };
+  onNextPeriod=()=>{ const idx=this.state.periods.findIndex(p=>p.key===this.state.activePeriodKey); if(idx>0){ const np=this.state.periods[idx-1]; this.setState({activePeriodKey:np.key,editPStart:np.start,editPEnd:np.end}); } };
+  onPeriodSettings=()=>{ const p=this.getActivePer(); this.showToast('งวด: '+p.label); };
+  onPStartEdit=(e)=>this.setState({editPStart:e.target.value});
+  onPEndEdit=(e)=>this.setState({editPEnd:e.target.value});
+  onPeriodSave=()=>{
+    const {editPStart:start,editPEnd:end,activePeriodKey:key}=this.state;
+    if(!start||!end||!start.includes('/')||!end.includes('/')) return this.showToast('รูปแบบวันที่: DD/MM');
+    const newDates=this.makePeriodDates(start,end);
+    const newPeriods=this.state.periods.map(p=>p.key!==key?p:{...p,start,end,label:start+' – '+end});
+    const newEmp=this.state.employees.map(emp=>{
+      const old=emp.payData[key]||{};
+      let pd;
+      if(emp.group==='mixer'||emp.group==='auxmixer') pd={...old,days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,early:0,day:0,night:0,q:0}; })};
+      else if(emp.group==='trailer') pd={...old,days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,trips:0,tons:0}; })};
+      else if(emp.group==='water') pd={...old,days:newDates.map(d=>{ const x=(old.days||[]).find(r=>r.d===d.d); return x||{d:d.d,trips:0,vol:0}; })};
+      else if(emp.group==='sales') pd={...old,records:old.records||[]};
+      else pd={...old,wdays:newDates.map(d=>{ const x=(old.wdays||[]).find(r=>r.d===d.d); return x||{d:d.d,present:false,units:0,ot:0}; })};
+      return {...emp,payData:{...emp.payData,[key]:pd}};
+    });
+    this.setState({periods:newPeriods,employees:newEmp},()=>this.saveToCloud()); this.showToast('อัปเดตช่วงเวลางวดแล้ว');
+  };
+
+  updateDay=(i,f,v)=>{ const val=this.n(v); this.patchPD(pd=>({...pd,days:pd.days.map((r,j)=>j===i?{...r,[f]:val}:r)})); };
+  updateWday=(i,f,v)=>{ const val=this.n(v); this.patchPD(pd=>({...pd,wdays:pd.wdays.map((r,j)=>j===i?{...r,[f]:val}:r)})); };
+  toggleWday=(i)=>{ this.patchPD(pd=>({...pd,wdays:pd.wdays.map((r,j)=>j===i?{...r,present:!r.present}:r)})); };
+  updateRec=(id,f,v)=>{ this.patchPD(pd=>({...pd,records:pd.records.map(r=>r.id===id?{...r,[f]:v}:r)})); };
+  toggleRecKind=(id)=>{ this.patchPD(pd=>({...pd,records:pd.records.map(r=>r.id===id?{...r,kind:r.kind==='credit'?'cash':'credit'}:r)})); };
+  toggleRecPT=(id)=>{ this.patchPD(pd=>({...pd,records:pd.records.map(r=>r.id===id?{...r,productType:r.productType==='other'?'concrete':'other'}:r)})); };
+  delRec=(id)=>{ this.patchPD(pd=>({...pd,records:pd.records.filter(r=>r.id!==id)})); };
+  onAddRec=()=>{ this.patchPD(pd=>({...pd,records:[...(pd.records||[]),{id:'r'+Date.now(),cust:'ลูกค้าใหม่',site:'',product:'',qty:0,kind:'cash',productType:'concrete'}]})); };
+
+  money(v){ return '฿'+Math.round(Math.abs(v)).toLocaleString('en-US'); }
+
+  buildSummaryHtml(){
+    const per=this.getActivePer();
+    const TYPE_LABELS={mixer:'รถมิกซ์',auxmixer:'รถโม่เสริม',trailer:'เทรลเลอร์',water:'รถน้ำ',loader:'Loader',sales:'พนักงานขาย',worker:'พนักงาน'};
+    const rows=this.state.employees.map(e=>{ const c=this.calcEmp(e); return {code:e.code||'—',name:e.name,type:TYPE_LABELS[e.group]||e.group,gross:this.money(c.gross),ded:c.ded>0?'-'+this.money(c.ded):'-',net:this.money(c.net),status:e.status}; });
+    const totalNet=this.state.employees.reduce((a,e)=>a+this.calcEmp(e).net,0);
+    const bodyRows=rows.map(r=>'<tr><td>'+r.code+'</td><td>'+r.name+'</td><td>'+r.type+'</td><td align="right">'+r.gross+'</td><td align="right">'+r.ded+'</td><td align="right"><b>'+r.net+'</b></td><td>'+r.status+'</td></tr>').join('');
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>สรุปค่าตอบแทน '+per.name+'</title>'
+      +'<style>body{font-family:"Segoe UI",sans-serif;padding:24px;color:#1e293b;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #cbd5e1;padding:7px 11px;font-size:13px;}th{background:#1e293b;color:#fff;text-align:left;}h2,h3{margin:4px 0;}tfoot td{font-weight:700;}</style>'
+      +'</head><body><h2>บริษัท เอ็นเอ็นวาย แมททีเรียลส์ จำกัด</h2><h3>รายงานสรุปค่าตอบแทน &mdash; งวด '+per.label+'</h3>'
+      +'<table><thead><tr><th>รหัส</th><th>ชื่อ-สกุล</th><th>กลุ่มงาน</th><th align="right">รายได้รวม</th><th align="right">หัก</th><th align="right">รับสุทธิ</th><th>สถานะ</th></tr></thead>'
+      +'<tbody>'+bodyRows+'</tbody>'
+      +'<tfoot><tr><td colspan="5" align="right">รวมทั้งหมด</td><td align="right">'+this.money(totalNet)+'</td><td></td></tr></tfoot></table></body></html>';
+  }
+  onExportExcel=()=>{
+    const per=this.getActivePer(); const html=this.buildSummaryHtml();
+    const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download='สรุปค่าตอบแทน_'+per.name+'.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),2000); this.showToast('ดาวน์โหลดไฟล์ Excel แล้ว');
+  };
+  onExportPDF=()=>{
+    const html=this.buildSummaryHtml();
+    const win=window.open('','_blank','width=900,height=700');
+    if(win){ win.document.write(html); win.document.close(); setTimeout(()=>win.print(),500); }
+  };
+
+  onPrint=()=>{
+    const emp=this.sel(); const c=this.calcEmp(emp); const per=this.getActivePer();
+    const money=v=>'฿'+Math.round(Math.abs(v)).toLocaleString('en-US');
+    const rows=c.segs.map(s=>'<tr><td>'+s.label+'</td><td style="text-align:right;color:#16a34a;">'+money(s.val)+'</td></tr>').join('');
+    const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>สลิปค่าตอบแทน</title><style>body{font-family:\'Segoe UI\',sans-serif;padding:30px;max-width:380px;margin:0 auto;color:#1e293b;}h2,h3{text-align:center;margin:4px 0;}table{width:100%;border-collapse:collapse;margin:10px 0;}td{padding:7px 4px;font-size:13px;border-bottom:1px solid #f1f5f9;}td:last-child{text-align:right;}.net{font-size:18px;font-weight:700;}.ded{color:#dc2626;}.hr{border-top:2px solid #1e293b;font-weight:700;}</style></head><body><h2>บริษัท เอ็นเอ็นวาย แมททีเรียลส์ จำกัด</h2><h3>ใบแจ้งค่าตอบแทน</h3><table><tr><td>งวด</td><td>'+per.label+'</td></tr><tr><td>พนักงาน</td><td>'+emp.name+'</td></tr><tr><td>รหัส</td><td>'+emp.code+'</td></tr><tr><td>ตำแหน่ง</td><td>'+emp.role+'</td></tr></table><table>'+rows+'</table><table><tr><td>รายได้รวม</td><td style="text-align:right;">'+money(c.gross)+'</td></tr>'+(c.ded>0?'<tr class="ded"><td>หักรวม</td><td style="text-align:right;">−'+money(c.ded)+'</td></tr>':'')+'<tr class="hr"><td class="net">รับสุทธิ</td><td class="net" style="text-align:right;color:#2563eb;">'+money(c.net)+'</td></tr></table><hr style="margin-top:50px;"><p style="font-size:11px;text-align:center;">ผู้อนุมัติ _______________ &nbsp;&nbsp; วันที่ _______________</p></body></html>';
+    const win=window.open('','_blank','width=480,height=640'); if(win){win.document.write(html);win.document.close();setTimeout(()=>win.print(),500);}
+  };
+
+  onImportFile=(e)=>{
+    const file=e.target.files&&e.target.files[0]; if(!file)return;
+    this.showToast('กำลังนำเข้าข้อมูล...');
+    const reader=new FileReader();
+    reader.onload=async(ev)=>{ try{ await this.doImportXlsx(ev.target.result); }catch(err){ this.showToast('ไม่สามารถอ่านไฟล์: '+err.message); } e.target.value=''; };
+    reader.readAsArrayBuffer(file);
+  };
+
+  async doImportXlsx(buf){
+    const bytes=new Uint8Array(buf); const dv=new DataView(buf);
+    let eocd=-1; for(let i=bytes.length-22;i>=0;i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}}
+    if(eocd<0)throw new Error('ไม่ใช่ไฟล์ Excel');
+    const cdOff=dv.getUint32(eocd+16,true),cdCnt=dv.getUint16(eocd+10,true);
+    const dec=new TextDecoder('utf-8');
+    async function inflate(b){const ds=new DecompressionStream('deflate-raw');const w=ds.writable.getWriter();w.write(b);w.close();return new Uint8Array(await new Response(ds.readable).arrayBuffer());}
+    let p=cdOff; const files={};
+    for(let i=0;i<cdCnt;i++){
+      const method=dv.getUint16(p+10,true),compSize=dv.getUint32(p+20,true),nameLen=dv.getUint16(p+28,true),extraLen=dv.getUint16(p+30,true),commLen=dv.getUint16(p+32,true);
+      const lho=dv.getUint32(p+42,true),name=dec.decode(bytes.slice(p+46,p+46+nameLen));
+      const lnl=dv.getUint16(lho+26,true),lel=dv.getUint16(lho+28,true),ds=lho+30+lnl+lel,comp=bytes.slice(ds,ds+compSize);
+      if(name.endsWith('.xml')||name.endsWith('.rels')) files[name]=method===0?dec.decode(comp):dec.decode(await inflate(comp));
+      p+=46+nameLen+extraLen+commLen;
+    }
+    const ss=[]; const sx=files['xl/sharedStrings.xml']||'';
+    for(const m of sx.matchAll(/<si>([\s\S]*?)<\/si>/g)){const txt=[...m[1].matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map(t=>t[1]).join('');ss.push(txt.replace(/&amp;/g,'&'));}
+    const wb=files['xl/workbook.xml']||'',rels=files['xl/_rels/workbook.xml.rels']||'';
+    const relMap={}; [...rels.matchAll(/<Relationship[^>]*Id="([^"]*)"[^>]*Target="([^"]*)"/g)].forEach(m=>relMap[m[1]]=m[2]);
+    const sheets=[...wb.matchAll(/<sheet[^>]*name="([^"]*)"[^>]*r:id="([^"]*)"/g)].map(m=>({name:m[1],file:'xl/'+relMap[m[2]]}));
+    const key=this.state.activePeriodKey; const per=this.getActivePer(); const dates=this.makePeriodDates(per.start,per.end);
+    const newEmp=[...this.state.employees]; let imported=0;
+    for(const sheet of sheets){
+      const xml=files[sheet.file]||''; if(!xml)continue;
+      const cells={}; for(const rm of xml.matchAll(/<row[^>]*r="(\d+)"[^>]*>([\s\S]*?)<\/row>/g)){const rn=+rm[1];for(const cm of rm[2].matchAll(/<c r="([A-Z]+)\d+"(?:[^>]*t="([^"]*)")?[^>]*>(?:<v>([\s\S]*?)<\/v>)?/g)){const col=cm[1],t=cm[2];let v=cm[3];if(v===undefined)continue;if(t==='s')v=ss[+v]||'';if(!cells[rn])cells[rn]={};cells[rn][col]=String(v);}}
+      let truckNo=null;
+      const r3=cells[3]||{}; for(const v of Object.values(r3)){const m=String(v).match(/(\d+)/);if(m&&+m[1]>=1&&+m[1]<=20){truckNo=String(+m[1]);break;}}
+      if(!truckNo)continue;
+      const empIdx=newEmp.findIndex(e=>e.truckNo===truckNo);
+      if(empIdx<0)continue;
+      const emp={...newEmp[empIdx]}; if(!emp.payData)emp.payData={};
+      if(!emp.payData[key]) emp.payData[key]=this.emptyPD(emp,dates);
+      let changed=false;
+      for(const [rn,row] of Object.entries(cells)){
+        const dayStr=row['A']; if(!dayStr)continue; const dayNum=parseInt(dayStr); if(isNaN(dayNum)||dayNum<1||dayNum>31)continue;
+        const [sd,sm]=per.start.split('/').map(Number),[,em]=per.end.split('/').map(Number);
+        const mon=dayNum>=sd?sm:em; const dd=(dayNum<10?'0'+dayNum:''+dayNum)+'/'+(mon<10?'0'+mon:''+mon);
+        const dayIdx=(emp.payData[key].days||[]).findIndex(d=>d.d===dd); if(dayIdx<0)continue;
+        const nums=Object.entries(row).filter(([k])=>k!=='A').map(([,v])=>+v).filter(v=>!isNaN(v)&&v>0);
+        if(nums.length>=1){ emp.payData[key].days[dayIdx]={...emp.payData[key].days[dayIdx],day:nums[0]||0,night:nums[1]||0}; changed=true; }
+      }
+      if(changed){newEmp[empIdx]=emp;imported++;}
+    }
+    if(imported>0){this.setState({employees:newEmp});this.showToast('นำเข้าข้อมูล '+imported+' คนสำเร็จ');}
+    else this.showToast('ไม่พบข้อมูลที่ตรงกัน');
+  }
+
+  onAddEmp=()=>this.setState({modal:{mode:'add',empId:null,name:'',code:'',group:'mixer',truckNo:'',reg:'',role:''}});
+  onEditEmp=()=>{ const d=this.sel(); this.setState({modal:{mode:'edit',empId:d.id,name:d.name,code:d.code||'',group:d.group,truckNo:d.truckNo||'',reg:d.reg||'',role:d.role||''}}); };
+  onDeleteEmp=()=>{ const d=this.sel(); if(!d||!d.id||d.id==='_none')return; if(!window.confirm('ลบพนักงาน "'+d.name+'" ใช่หรือไม่? การลบนี้ไม่สามารถย้อนกลับได้')) return; this.setState(s=>({employees:s.employees.filter(e=>e.id!==d.id),view:'roster',selectedId:null}),()=>this.saveToCloud()); this.showToast('ลบพนักงานแล้ว'); };
+  onModalClose=()=>this.setState({modal:null});
+  onModal=(e)=>{ const map={mName:'name',mCode:'code',mRole:'role',mTruckNo:'truckNo',mReg:'reg'}; const k=map[e.target.name]; if(k) this.setState(ss=>({modal:{...ss.modal,[k]:e.target.value}})); };
+  onModalSave=()=>{
+    const m=this.state.modal; if(!m||!m.name.trim()){this.showToast('กรุณาระบุชื่อ-สกุล');return;}
+    const key=this.state.activePeriodKey; const per=this.getActivePer(); const dates=this.makePeriodDates(per.start,per.end);
+    if(m.mode==='add'){
+      const id='emp_'+Date.now(); const base={id,code:m.code,name:m.name,reg:m.reg||'—',truckNo:m.truckNo||'—',group:m.group,role:m.role,status:'รอตรวจสอบ',payData:{},history:[0,0,0,0,0]};
+      let emp;
+      if(m.group==='mixer'||m.group==='auxmixer') emp={...base,earlyRate:100,dayRate:80,nightRate:100,cleaning:1000}; 
+      else if(m.group==='trailer') emp={...base,trailerRate:200,cleaning:1000};
+      else if(m.group==='water') emp={...base,waterRate:45,cleaning:1000};
+      else if(m.group==='sales') emp={...base,creditRate:5,cashRate:7,otherRate:10};
+      else emp={...base,ratePerUnit:1,otRate:70};
+      emp.payData[key]=this.emptyPD(emp,dates);
+      this.setState(ss=>({employees:[...ss.employees,emp],modal:null,selectedId:id,view:'detail'}),()=>this.saveToCloud());
+      this.showToast('เพิ่มพนักงานใหม่แล้ว');
+    } else {
+      this.setState(ss=>({employees:ss.employees.map(e=>e.id===m.empId?{...e,name:m.name,code:m.code,truckNo:m.truckNo,reg:m.reg,role:m.role}:e),modal:null}),()=>this.saveToCloud());
+      this.showToast('อัปเดตข้อมูลพนักงานแล้ว');
+    }
+  };
+
+  renderVals(){
+    const s=this.state; const role=s.role;
+    const canEdit=role==='admin'||role==='maker', canVerify=role==='admin'||role==='manager', canApprove=role==='admin';
+    const readOnly=!canEdit, roBg=readOnly?'#f8fafc':'#fff';
+    const money=v=>'฿'+Math.round(Math.abs(v)).toLocaleString('en-US');
+    const ROLE_LABELS={admin:'ผู้ดูแลระบบ',manager:'ผู้ตรวจสอบ',maker:'ผู้กรอกข้อมูล'};
+    const ROLE_BG={admin:'#1e293b',manager:'#f0fdf4',maker:'#eff6ff'};
+    const ROLE_FG={admin:'#fff',manager:'#15803d',maker:'#1d4ed8'};
+    const TYPE={mixer:{label:'รถมิกซ์',bg:'#dbeafe',fg:'#1d4ed8'},auxmixer:{label:'รถโม่เสริม',bg:'#bfdbfe',fg:'#1e40af'},trailer:{label:'เทรลเลอร์',bg:'#e0e7ff',fg:'#4338ca'},water:{label:'รถน้ำ',bg:'#e0f2fe',fg:'#0284c7'},loader:{label:'Loader',bg:'#fef9c3',fg:'#854d0e'},sales:{label:'พนักงานขาย',bg:'#cffafe',fg:'#0e7490'},worker:{label:'พนักงาน',bg:'#ede9fe',fg:'#6d28d9'}};
+    const STAT={'อนุมัติ':{bg:'#dcfce7',fg:'#15803d'},'รอตรวจสอบ':{bg:'#fef3c7',fg:'#b45309'},'ผ่านการตรวจสอบ':{bg:'#cffafe',fg:'#0e7490'}};
+    const stOf=(x)=>STAT[x]||{bg:'#f1f5f9',fg:'#64748b'};
+    const MONTHS=['ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','มิ.ย.'];
+    const per=this.getActivePer(); const perIdx=s.periods.findIndex(p=>p.key===s.activePeriodKey);
+    const emp=s.employees; const q=(s.query||'').toLowerCase();
+    const subOf=(d)=>(d.group==='mixer'||d.group==='auxmixer'||d.group==='trailer'||d.group==='water')?'รหัส '+d.code+' · ทะเบียน '+(d.reg||'—'):'รหัส '+(d.code||'—');
+    const metricOf=(d,c)=>d.group==='sales'?(c.metric.q+' คิว'):(d.group==='worker'||d.group==='loader')?(c.metric.daysWorked+' วัน'):(c.metric.trips+' เที่ยว');
+    const rows=emp.filter(d=>(s.filter==='all'||d.group===s.filter)&&(!q||d.name.toLowerCase().includes(q)||(d.code||'').includes(q)))
+      .map(d=>{ const c=this.calcEmp(d); const t=TYPE[d.group]||TYPE.worker; const st=stOf(d.status);
+        return {name:d.name,sub:subOf(d),initials:this.init(d.name),typeLabel:t.label,typeBg:t.bg,typeFg:t.fg,avBg:t.bg,avFg:t.fg,metric:metricOf(d,c),gross:money(c.gross),ded:c.ded>0?'−'+money(c.ded):'—',net:money(c.net),status:d.status,stBg:st.bg,stFg:st.fg,onView:()=>this.setState({view:'detail',selectedId:d.id})}; });
+    const allC=emp.map(d=>this.calcEmp(d));
+    const totalNet=allC.reduce((a,c)=>a+c.net,0);
+    const totalTrips=emp.reduce((a,d,i)=>(d.group==='mixer'||d.group==='trailer'||d.group==='water')?a+allC[i].metric.trips:a,0);
+    const pendingCount=emp.filter(d=>d.status==='รอตรวจสอบ').length;
+    const mk=(key,label)=>{ const act=s.filter===key; const cnt=key==='all'?emp.length:emp.filter(e=>e.group===key).length; return {label,count:cnt,onClick:()=>this.setState({filter:key}),bg:act?'#1e293b':'#fff',fg:act?'#fff':'#475569',border:act?'#1e293b':'#e2e8f0',cBg:act?'rgba(255,255,255,.16)':'#f1f5f9',cFg:act?'#fff':'#64748b'}; };
+    const tabs=[mk('all','ทั้งหมด'),mk('mixer','รถมิกซ์'),mk('auxmixer','รถโม่เสริม'),mk('trailer','เทรลเลอร์'),mk('water','รถน้ำ'),mk('loader','Loader'),mk('sales','พนักงานขาย'),mk('worker','พนักงาน')];
+    // detail
+    const d=this.sel(); const c=this.calcEmp(d); const pd=this.getPD(d); const t=TYPE[d.group]||TYPE.worker; const st=stOf(d.status);
+    const dayRows=(pd.days||[]).map((r,i)=>({d:r.d,early:r.early,day:r.day,night:r.night,q:r.q,
+      onEarly:(e)=>this.updateDay(i,'early',e.target.value),onDay:(e)=>this.updateDay(i,'day',e.target.value),onNight:(e)=>this.updateDay(i,'night',e.target.value),onQ:(e)=>this.updateDay(i,'q',e.target.value)}));
+    const trlRows=(pd.days||[]).map((r,i)=>({d:r.d,trips:r.trips,tons:r.tons,onTrips:(e)=>this.updateDay(i,'trips',e.target.value),onTons:(e)=>this.updateDay(i,'tons',e.target.value)}));
+    const wtrRows=(pd.days||[]).map((r,i)=>({d:r.d,trips:r.trips,vol:r.vol,onTrips:(e)=>this.updateDay(i,'trips',e.target.value),onVol:(e)=>this.updateDay(i,'vol',e.target.value)}));
+
+    const recRows=(pd.records||[]).map(r=>{ const cr=r.kind==='credit',ot=r.productType==='other';
+      return {id:r.id,cust:r.cust,site:r.site,product:r.product,qty:r.qty,ptLabel:ot?'อื่นๆ':'คอนกรีต',ptBg:ot?'#fef3c7':'#eff6ff',ptFg:ot?'#b45309':'#1d4ed8',ptBorder:ot?'#fde68a':'#bfdbfe',kindLabel:cr?'เครดิต':'เงินสด',kBg:cr?'#cffafe':'#f0fdf4',kFg:cr?'#0e7490':'#15803d',kBorder:cr?'#a5f3fc':'#bbf7d0',onCust:(e)=>this.updateRec(r.id,'cust',e.target.value),onSite:(e)=>this.updateRec(r.id,'site',e.target.value),onProduct:(e)=>this.updateRec(r.id,'product',e.target.value),onQty:(e)=>this.updateRec(r.id,'qty',this.n(e.target.value)),onPT:()=>this.toggleRecPT(r.id),onKind:()=>this.toggleRecKind(r.id),onDel:()=>this.delRec(r.id)}; });
+    const wdayRows=(pd.wdays||[]).map((r,i)=>({d:r.d,units:r.units,ot:r.ot,pLabel:r.present?'+ มา':'- ขาด',pBg:r.present?'#dcfce7':'#f1f5f9',pFg:r.present?'#15803d':'#94a3b8',cursor:canEdit?'pointer':'default',onPresent:canEdit?()=>this.toggleWday(i):()=>{},onUnits:(e)=>this.updateWday(i,'units',e.target.value),onOt:(e)=>this.updateWday(i,'ot',e.target.value)}));
+    const segView=c.segs.filter(x=>x.val>0).map(x=>({label:x.label,color:x.color,valStr:money(x.val),pct:c.gross>0?x.val/c.gross*100:0}));
+    const hist=(d.history||[]).concat([c.net]); const maxH=Math.max(...hist,1);
+    const histBars=hist.map((v,i)=>({pct:Math.max(3,v/maxH*100),color:i===hist.length-1?'#2563eb':'#cbd5e1',label:MONTHS[i]||''}));
+    const prev=(d.history&&d.history.length)?d.history[d.history.length-1]:c.net; const delta=c.net-prev; const dpct=prev?delta/prev*100:0;
+    const modal=s.modal;
+    const mgGrps=[{key:'mixer',label:'รถมิกซ์'},{key:'auxmixer',label:'รถโม่เสริม'},{key:'trailer',label:'เทรลเลอร์'},{key:'water',label:'รถน้ำ'},{key:'loader',label:'Loader (แบบพนักงาน)'},{key:'sales',label:'พนักงานขาย'},{key:'worker',label:'พนักงาน'}];
+    const mgOpts=modal?mgGrps.map(g=>({label:g.label,bg:modal.group===g.key?'#2563eb':'#f8fafc',fg:modal.group===g.key?'#fff':'#475569',border:modal.group===g.key?'#2563eb':'#e2e8f0',onClick:()=>this.setState(ss=>({modal:{...ss.modal,group:g.key}}))})):[];
+    return {
+      isLogin:s.view==='login',isApp:s.view!=='login',
+      loginUser:s.loginUser,loginPass:s.loginPass,loginError:s.loginError||'',
+      onLoginUser:this.onLoginUser,onLoginPass:this.onLoginPass,onLogin:this.onLogin,onLogout:this.onLogout,
+      roleLabel:ROLE_LABELS[role]||'',roleBadgeBg:ROLE_BG[role]||'#f1f5f9',roleBadgeFg:ROLE_FG[role]||'#64748b',
+      cloudLabel:{connecting:'กำลังเชื่อมต่อ...',synced:'ซิงค์แล้ว',saving:'กำลังบันทึก...',offline:'ออฟไลน์'}[s.cloudStatus]||'',
+      cloudColor:{connecting:'#94a3b8',synced:'#16a34a',saving:'#2563eb',offline:'#dc2626'}[s.cloudStatus]||'#94a3b8',
+      month:per.name,activePeriodLabel:per.label,nextColor:perIdx>0?'#475569':'#cbd5e1',
+      onPrevPeriod:this.onPrevPeriod,onNextPeriod:this.onNextPeriod,onPeriodSettings:this.onPeriodSettings,
+      canEdit,canVerify,canApprove,readOnly,roBg,
+      isRoster:s.view==='roster',isDetail:s.view==='detail',
+      totalCount:emp.length,totalNetStr:money(totalNet),totalTripsStr:totalTrips.toLocaleString(),pendingCount,
+      query:s.query||'',onSearch:this.onSearch,rows,isEmptyRoster:rows.length===0,tabs,onAddEmp:this.onAddEmp,onImportFile:this.onImportFile,
+      onExportExcel:this.onExportExcel,onExportPDF:this.onExportPDF,
+      d:{...d,advance:pd.advance||0,sso:pd.sso??750,careDeduct:pd.careDeduct||0,other:pd.other||0},dInitials:this.init(d.name),dName:d.name,dSub:subOf(d),
+      typeLabel:t.label,typeBg:t.bg,typeFg:t.fg,statusLabel:d.status,statBg:st.bg,statFg:st.fg,
+      periodStart:s.editPStart,periodEnd:s.editPEnd,onPStartEdit:this.onPStartEdit,onPEndEdit:this.onPEndEdit,onPeriodSave:this.onPeriodSave,
+      isDriver:d.group==='mixer'||d.group==='auxmixer'||d.group==='trailer'||d.group==='water',
+      hasDeductions:d.group==='mixer'||d.group==='auxmixer'||d.group==='trailer'||d.group==='water'||d.group==='worker'||d.group==='loader',
+      isMixer:d.group==='mixer'||d.group==='auxmixer', mixerSectionTitle:d.group==='auxmixer'?'บันทึกการวิ่งรถโม่เสริม':'บันทึกการวิ่งรถมิกซ์',
+      isTrailer:d.group==='trailer',isWater:d.group==='water',isSales:d.group==='sales',
+      isWorker:d.group==='worker'||d.group==='loader', workerSectionTitle:d.group==='loader'?'การมาทำงาน \u0026 ผลผลิตรายวัน — Loader':'การมาทำงาน \u0026 ผลผลิตรายวัน',
+      onBack:this.onBack,onEditEmp:this.onEditEmp,onDeleteEmp:this.onDeleteEmp,onSaveDraft:this.onSaveDraft,onVerify:this.onVerify,onApprove:this.onApprove,onField:this.onField,onDedField:this.onDedField,onPrint:this.onPrint,
+      dayRows,se:c.metric.se,sd:c.metric.sd,sn:c.metric.sn,sq:Math.round((c.metric.sq||0)*10)/10,
+      trlRows,tTrips:(pd.days||[]).reduce((a,r)=>a+this.n(r.trips),0),tTons:Math.round((pd.days||[]).reduce((a,r)=>a+this.n(r.tons),0)*10)/10,
+      wtrRows,wTrips:(pd.days||[]).reduce((a,r)=>a+this.n(r.trips),0),wVol:(pd.days||[]).reduce((a,r)=>a+this.n(r.vol),0),
+      onAddRec:this.onAddRec,recRows,creditQ:Math.round((c.metric.creditQ||0)*10)/10,cashQ:Math.round((c.metric.cashQ||0)*10)/10,otherQ:Math.round((c.metric.otherQ||0)*10)/10,
+      wdayRows,daysWorked:c.metric.daysWorked||0,totalUnits:c.metric.units||0,wOT:c.metric.ot||0,
+      grossStr:money(c.gross),dedStr:money(c.ded),netStr:money(c.net),
+      deltaColor:delta>=0?'#16a34a':'#dc2626',deltaPctStr:(delta>=0?'+':'')+(dpct).toFixed(1)+'%',deltaStr:(delta>=0?'+':'')+'฿'+Math.round(delta).toLocaleString(),
+      segView,histBars,
+      showModal:!!modal,modal:modal||{name:'',code:'',group:'mixer',truckNo:'',reg:'',role:''},
+      modalTitle:modal&&modal.mode==='edit'?'แก้ไขข้อมูลพนักงาน':'เพิ่มพนักงานใหม่',
+      modalBtnLabel:modal&&modal.mode==='edit'?'บันทึกการแก้ไข':'เพิ่มพนักงาน',
+      modalIsVehicle:modal&&(modal.group==='mixer'||modal.group==='auxmixer'||modal.group==='trailer'||modal.group==='water'),
+      mgOpts,onModal:this.onModal,onModalClose:this.onModalClose,onModalSave:this.onModalSave,
+      toast:s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
