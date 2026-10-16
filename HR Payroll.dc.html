@@ -60,7 +60,7 @@
           <button onClick="{{ onPeriodSettings }}" style="background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:5px 14px;font-size:12.5px;font-weight:600;cursor:pointer;color:#334155;font-family:inherit;display:flex;align-items:center;gap:6px;" style-hover="background:#f8fafc;"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></span>{{ month }}</button>
           <button onClick="{{ onNextPeriod }}" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:5px 10px;font-size:13px;cursor:pointer;color:{{ nextColor }};font-family:inherit;" style-hover="background:#e2e8f0;">›</button>
         </div>
-        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:{{ cloudColor }};font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:{{ cloudColor }};"></span>{{ cloudLabel }}</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:{{ cloudColor }};font-weight:600;" title="{{ cloudError }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ cloudColor }};"></span>{{ cloudLabel }}</span>
         <span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:600;background:{{ roleBadgeBg }};color:{{ roleBadgeFg }};">{{ roleLabel }}</span>
         <button onClick="{{ onLogout }}" style="background:transparent;border:1px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;" style-hover="background:#f8fafc;">ออกจากระบบ</button>
       </div>
@@ -431,7 +431,10 @@ class Component extends DCLogic {
       {key:'2569-02',name:'กุมภาพันธ์ 2569',label:'26 ม.ค. – 24 ก.พ. 69',start:'26/01',end:'24/02'},
       {key:'2569-01',name:'มกราคม 2569',label:'26 ธ.ค. – 24 ม.ค. 69',start:'26/12',end:'24/01'},
     ];
-    const curKey='2569-07';
+    const _now=new Date(); let _m=_now.getMonth()+1, _y=_now.getFullYear()+543;
+    if(_now.getDate()>=26){ _m++; if(_m>12){_m=1;_y++;} }
+    const _autoKey=_y+'-'+(_m<10?'0'+_m:''+_m);
+    const curKey=PERIODS.some(p=>p.key===_autoKey)?_autoKey:(_y>2569?PERIODS[0].key:PERIODS[PERIODS.length-1].key);
     const curPer=PERIODS.find(p=>p.key===curKey);
     const dates=this.makePeriodDates(curPer.start,curPer.end);
     // Production start: no seeded employees or transactions — add real staff via "+ เพิ่มพนักงาน".
@@ -457,13 +460,13 @@ class Component extends DCLogic {
   async loadFromCloud(){
     try{
       const res=await this.supaFetch('payroll_data?id=eq.main&select=state');
-      if(!res.ok) throw new Error('http '+res.status);
+      if(!res.ok){ const t=await res.text().catch(()=>''); throw new Error('http '+res.status+' '+t.slice(0,120)); }
       const rows=await res.json();
       if(rows&&rows[0]&&rows[0].state){
         const saved=rows[0].state;
-        this.setState({employees:saved.employees||[],periods:saved.periods||this.state.periods,cloudStatus:'synced'});
-      } else { this.setState({cloudStatus:'synced'}); }
-    }catch(e){ this.setState({cloudStatus:'offline'}); }
+        this.setState({employees:saved.employees||[],periods:saved.periods||this.state.periods,cloudStatus:'synced',cloudError:''});
+      } else { this.setState({cloudStatus:'synced',cloudError:''}); }
+    }catch(e){ console.error('[cloud] load failed:',e.message); this.setState({cloudStatus:'offline',cloudError:e.message}); }
   }
   saveToCloud(){
     clearTimeout(this._saveTimer);
@@ -472,8 +475,9 @@ class Component extends DCLogic {
       try{
         const body=JSON.stringify({id:'main',state:{employees:this.state.employees,periods:this.state.periods},updated_at:new Date().toISOString()});
         const res=await this.supaFetch('payroll_data?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates'},body});
-        this.setState({cloudStatus:res.ok?'synced':'offline'});
-      }catch(e){ this.setState({cloudStatus:'offline'}); }
+        if(!res.ok){ const t=await res.text().catch(()=>''); throw new Error('http '+res.status+' '+t.slice(0,120)); }
+        this.setState({cloudStatus:'synced',cloudError:''});
+      }catch(e){ console.error('[cloud] save failed:',e.message); this.setState({cloudStatus:'offline',cloudError:e.message}); }
     },700);
   }
 
@@ -548,7 +552,7 @@ class Component extends DCLogic {
   onLoginPass=(e)=>this.setState({loginPass:e.target.value});
   onLogin=()=>{
     const {loginUser:u,loginPass:p}=this.state;
-    const USERS={admin:{pass:'nny12345',role:'admin'},manager:{pass:'nny12345',role:'manager'},maker:{pass:'maker12345',role:'maker'}};
+    const USERS={admin:{pass:'nny12345',role:'admin'},manager:{pass:'nny12345',role:'manager'},maker:{pass:'maker12345',role:'maker'},maker2:{pass:'nny12345',role:'maker'}};
     const acc=USERS[u.trim().toLowerCase()];
     if(!acc||acc.pass!==p) return this.setState({loginError:'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'});
     this.setState({view:'roster',role:acc.role,loginError:''});
@@ -770,6 +774,7 @@ class Component extends DCLogic {
       modalGrid:s.isMobile?'1fr':'1fr 1fr',
       cloudLabel:{connecting:'กำลังเชื่อมต่อ...',synced:'ซิงค์แล้ว',saving:'กำลังบันทึก...',offline:'ออฟไลน์'}[s.cloudStatus]||'',
       cloudColor:{connecting:'#94a3b8',synced:'#16a34a',saving:'#2563eb',offline:'#dc2626'}[s.cloudStatus]||'#94a3b8',
+      cloudError:s.cloudError||'',
       month:per.name,activePeriodLabel:per.label,nextColor:perIdx>0?'#475569':'#cbd5e1',
       onPrevPeriod:this.onPrevPeriod,onNextPeriod:this.onNextPeriod,onPeriodSettings:this.onPeriodSettings,
       canEdit,canVerify,canApprove,readOnly,roBg,
